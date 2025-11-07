@@ -23,7 +23,7 @@ import { useI18n } from '@/hooks/use-i18n';
 interface UserCardContentProps {
   progressValue: number;
   isExpired: boolean;
-  progressVariant: 'default' | 'warning' | 'destructive' | undefined;
+  progressVariant: 'default' | 'warning' | 'orange' | 'destructive' | undefined;
   remainingTime: string;
   isTimerActive: boolean;
   editMode: boolean;
@@ -60,13 +60,15 @@ export function UserCardContent({
         */}
         <Progress
           value={isExpired ? 100 : Math.min(100, progressValue)}
-          variant={progressVariant ?? 'default'}
+          variant={progressVariant}
           className="h-10"
           style={{ borderRadius: '0.5rem' }}
         />
-        <span className={`absolute font-semibold m-2 px-2 bg-card rounded-sm ${isExpired ? 'text-destructive' : 'text-color'}`}>
-          {remainingTime} {isExpired ? t('common.expired') : ''}
-        </span>
+        {isTimerActive && (
+          <span className={`absolute font-semibold m-2 px-2 bg-card rounded-sm ${isExpired ? 'text-destructive' : 'text-color'}`}>
+            {remainingTime} {isExpired ? t('common.expired') : ''}
+          </span>
+        )}
       </div>
 
       <div className="flex items-center gap-1">
