@@ -6,6 +6,7 @@
 
 export { useEditMode } from './use-edit-mode';
 export { useTimerCalculations } from './use-timer-calculations';
+export { useTimeInputs } from './use-time-inputs';
 export { useSectionCards } from './use-section-cards';
 export { useCardActions } from './use-card-actions';
 export { useCardInteractions } from './use-card-interactions';

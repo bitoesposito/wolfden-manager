@@ -52,7 +52,7 @@ export function UserCardContent({
 
   return (
     <CardContent className="px-0 flex gap-2 items-center">
-      <div className="flex flex-col gap-1 w-full">
+      <div className="flex flex-col gap-1 w-full relative">
         {/* 
           When expired, always show 100% with red color
           The progressValue will be > 100 when expired, but we limit to 100 for display
@@ -61,9 +61,11 @@ export function UserCardContent({
         <Progress
           value={isExpired ? 100 : Math.min(100, progressValue)}
           variant={progressVariant ?? 'default'}
+          className="h-10"
+          style={{ borderRadius: '0.5rem' }}
         />
-        <span className={`text-xs ${isExpired ? 'text-destructive' : 'text-muted-foreground'}`}>
-          {remainingTime} {isExpired ? t('common.expired') : t('common.remaining')}
+        <span className={`absolute font-semibold m-2 px-2 bg-card rounded-sm ${isExpired ? 'text-destructive' : 'text-color'}`}>
+          {remainingTime} {isExpired ? t('common.expired') : ''}
         </span>
       </div>
 

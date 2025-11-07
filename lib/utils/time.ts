@@ -76,6 +76,31 @@ export function timestampToTimeString(timestamp: string | null): string {
 }
 
 /**
+ * Converts a time string (HH:mm) to ISO timestamp maintaining the date from base timestamp
+ * If no base timestamp is provided, uses current date
+ * @param timeString - Time string in HH:mm format
+ * @param baseTimestamp - Optional ISO timestamp to maintain the date from
+ * @returns ISO timestamp with the time from timeString and date from baseTimestamp (or current date)
+ */
+export function timeStringToISO(timeString: string, baseTimestamp?: string | null): string {
+  if (!timeString) return '';
+  
+  // Se c'è un timestamp base, mantieni la sua data e cambia solo l'ora
+  // Altrimenti usa la data corrente
+  const baseDate = baseTimestamp 
+    ? dayjs(baseTimestamp).tz(TIMEZONE)
+    : dayjs().tz(TIMEZONE);
+  
+  const [hours, minutes] = timeString.split(':').map(Number);
+  
+  if (isNaN(hours) || isNaN(minutes)) return '';
+  
+  // Mantieni la data originale e cambia solo l'ora
+  const dateTime = baseDate.hour(hours).minute(minutes).second(0).millisecond(0);
+  return dateTime.toISOString();
+}
+
+/**
  * Normalizes hours and minutes into a valid format
  * Handles carry-over when minutes exceed 60 or are negative
  * @param hours - Hours (can be negative)
@@ -132,6 +157,8 @@ export function getRemainingSeconds(endTimestamp: string | null): number {
 /**
  * Calculates progress percentage based on initial duration and remaining seconds
  * Uses seconds to ensure precise updates every second
+ * La barra rimane al 100% finché il tempo rimanente è superiore a 1 ora,
+ * poi inizia a scendere basandosi sull'ultima ora
  * @param initialMinutes - Initial duration in minutes
  * @param remainingSeconds - Remaining seconds (can be negative if expired)
  * @returns Progress percentage (0-100, or >100 if expired to show red progress bar)
@@ -141,6 +168,7 @@ export function calculateProgress(initialMinutes: number, remainingSeconds: numb
   
   // Convert initial duration to seconds for precise calculation
   const initialSeconds = initialMinutes * 60;
+  const ONE_HOUR_IN_SECONDS = 3600;
   
   // If time expired (negative value), return > 100
   // to indicate the progress bar should be red
@@ -149,11 +177,17 @@ export function calculateProgress(initialMinutes: number, remainingSeconds: numb
     const overtimeSeconds = Math.abs(remainingSeconds);
     // Return 100 + a percentage based on expired time
     // Limit to 200% to avoid excessive values
-    return Math.min(200, 100 + (overtimeSeconds / initialSeconds) * 100);
+    return Math.min(200, 100 + (overtimeSeconds / ONE_HOUR_IN_SECONDS) * 100);
   }
   
-  // Calculate percentage with second precision
-  const progress = (remainingSeconds / initialSeconds) * 100;
+  // Se il tempo rimanente è superiore a 1 ora, la barra è sempre al 100%
+  if (remainingSeconds > ONE_HOUR_IN_SECONDS) {
+    return 100;
+  }
+  
+  // Quando il tempo rimanente è <= 1 ora, calcola il progresso basandosi sull'ultima ora
+  // Il progresso va da 100% (1 ora rimanente) a 0% (0 secondi rimanenti)
+  const progress = (remainingSeconds / ONE_HOUR_IN_SECONDS) * 100;
   return Math.max(0, Math.min(100, progress));
 }
 

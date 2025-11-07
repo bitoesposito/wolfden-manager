@@ -95,6 +95,7 @@ export function UserCard({
             editMode={editMode}
             timer={timer}
             onNameChange={updateCardName}
+            onTimeChange={isTimerActive ? updateTimerDates : startTimerWithDates}
           />
 
           <UserCardContent
@@ -133,6 +134,7 @@ export function UserCard({
         onAddTimeDialogChange={setAddTimeDialogOpen}
         onDetailsDialogChange={setDetailsDialogOpen}
         onAddTime={handleAddTime}
+        onStartTimer={handleStartTimer}
         onStartTimerWithDates={startTimerWithDates}
         onUpdateTimerDates={updateTimerDates}
       />

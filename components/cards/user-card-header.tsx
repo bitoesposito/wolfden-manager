@@ -6,16 +6,17 @@
 import { CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Play, SkipForward } from 'lucide-react';
-import { timestampToTimeString } from '@/lib/utils/time';
 import { useI18n } from '@/hooks/use-i18n';
 import { useEffect, useState } from 'react';
 import type { TimerState } from '@/types';
+import { useTimeInputs } from '@/hooks/use-time-inputs';
 
 interface UserCardHeaderProps {
   name: string;
   editMode: boolean;
   timer?: TimerState;
   onNameChange: (name: string) => void;
+  onTimeChange?: (startTime: string, endTime: string) => void;
 }
 
 /**
@@ -27,6 +28,7 @@ export function UserCardHeader({
   editMode,
   timer,
   onNameChange,
+  onTimeChange,
 }: UserCardHeaderProps) {
   const { t } = useI18n();
   const [mounted, setMounted] = useState(false);
@@ -37,10 +39,19 @@ export function UserCardHeader({
     setMounted(true);
   }, []);
 
-  // Convert ISO timestamp to HH:mm for display
-  // Only show actual values after mount to avoid hydration mismatch
-  const startTime = mounted ? timestampToTimeString(timer?.startTime ?? null) : '00:00';
-  const endTime = mounted ? timestampToTimeString(timer?.endTime ?? null) : '00:00';
+  // Hook per gestire gli input time (stato e logica di conversione)
+  const {
+    startTime,
+    endTime,
+    startTimeValue,
+    endTimeValue,
+    handleStartTimeChange,
+    handleEndTimeChange,
+  } = useTimeInputs({
+    timer,
+    onTimeChange,
+    mounted,
+  });
 
   return (
     <CardHeader className="flex px-0 items-center">
@@ -60,9 +71,27 @@ export function UserCardHeader({
 
       <div className="flex items-center gap-1">
         <Play className="text-muted-foreground" size={16} />
-        <span className="text-sm text-muted-foreground mr-2">{startTime}</span>
+        {mounted && onTimeChange ? (
+          <Input
+            type="time"
+            value={startTimeValue}
+            onChange={handleStartTimeChange}
+            className="text-sm px-1 m-0 h-fit text-muted-foreground w-fit text-center border-transparent bg-transparent hover:bg-accent/50 focus:bg-accent/50 focus:border-input"
+          />
+        ) : (
+          <span className="text-sm text-muted-foreground mr-2">{startTime}</span>
+        )}
         <SkipForward className="text-muted-foreground" size={16} />
-        <span className="text-sm text-muted-foreground">{endTime}</span>
+        {mounted && onTimeChange ? (
+          <Input
+            type="time"
+            value={endTimeValue}
+            onChange={handleEndTimeChange}
+            className="text-sm px-1 m-0 h-fit text-muted-foreground w-fit text-center border-transparent bg-transparent hover:bg-accent/50 focus:bg-accent/50 focus:border-input"
+          />
+        ) : (
+          <span className="text-sm text-muted-foreground">{endTime}</span>
+        )}
       </div>
     </CardHeader>
   );

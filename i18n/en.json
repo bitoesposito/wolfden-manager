@@ -103,7 +103,9 @@
       "invalidDateTime": "Invalid date/time",
       "invalidDateTimeDescription": "The end date/time must be after the start date/time.",
       "conversionError": "Date conversion error",
-      "conversionErrorDescription": "An error occurred. Please try again."
+      "conversionErrorDescription": "An error occurred. Please try again.",
+      "cannotSubtractWhenInactive": "Cannot subtract time",
+      "cannotSubtractWhenInactiveDescription": "You cannot subtract time when the timer is not yet started. Start the timer first with a positive value."
     },
     "success": {
       "timerUpdated": "Timer updated",

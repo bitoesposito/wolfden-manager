@@ -29,6 +29,7 @@ interface AddTimeDialogProps {
   onConfirm: (hours: number, minutes: number) => void;
   onConfirmWithDates?: (startTime: string, endTime: string) => void; // ISO timestamps
   isTimerActive?: boolean; // If false, disables negative values (timer not yet started)
+  onStartTimer?: (durationMinutes: number) => void; // Callback per avviare il timer quando non è attivo
   currentStartTime?: string | null; // ISO timestamp - to initialize fields when editing an existing timer
   currentEndTime?: string | null; // ISO timestamp - to initialize fields when editing an existing timer
 }
@@ -142,6 +143,7 @@ export function AddTimeDialog({
   onConfirm, 
   onConfirmWithDates,
   isTimerActive = false,
+  onStartTimer,
   currentStartTime,
   currentEndTime,
 }: AddTimeDialogProps) {
@@ -259,8 +261,11 @@ export function AddTimeDialog({
       const h = parseTimeValue(hours);
       const m = parseTimeValue(minutes);
 
-      // If timer is not active, don't allow negative values
-      if (!isTimerActive && (h < 0 || m < 0)) {
+      // Se il timer non è attivo e il valore è negativo, mostra un avviso
+      if (!isTimerActive && totalMinutes < 0) {
+        toast.error(t('addTimeDialog.errors.cannotSubtractWhenInactive'), {
+          description: t('addTimeDialog.errors.cannotSubtractWhenInactiveDescription'),
+        });
         return;
       }
 
@@ -354,10 +359,7 @@ export function AddTimeDialog({
                 <Label className="text-sm font-medium">{t('addTimeDialog.quickChoices')}</Label>
                 <div className="grid grid-cols-4 gap-2">
               {quickValues.map((value, index) => {
-                // Disable negative values if timer is not active
-                const isNegative = value.value < 0;
-                const isDisabled = !isTimerActive && isNegative;
-                
+                // I valori negativi sono sempre abilitati, ma mostreranno un avviso se il timer non è attivo
                 return (
                   <Button
                     key={index}
@@ -366,7 +368,6 @@ export function AddTimeDialog({
                     size="sm"
                     onClick={() => handleQuickValue(value.field, value.value)}
                     className="text-xs"
-                    disabled={isDisabled}
                   >
                     {value.label}
                   </Button>
@@ -386,7 +387,7 @@ export function AddTimeDialog({
                 onIncrement={() => adjustHours(1)}
                 onDecrement={() => adjustHours(-1)}
                 placeholder={t('addTimeDialog.labels.hoursPlaceholder')}
-                allowNegative={isTimerActive}
+                allowNegative={true}
               />
               <TimeInput
                 id="minutes"
@@ -396,9 +397,9 @@ export function AddTimeDialog({
                 onIncrement={() => adjustMinutes(1)}
                 onDecrement={() => adjustMinutes(-1)}
                 placeholder={t('addTimeDialog.labels.minutesPlaceholder')}
-                min={isTimerActive ? "-59" : "0"}
+                min="-59"
                 max="59"
-                allowNegative={isTimerActive}
+                allowNegative={true}
               />
               </div>
             </div>

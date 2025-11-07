@@ -33,6 +33,7 @@ interface UserCardDialogsProps {
   onAddTimeDialogChange: (open: boolean) => void;
   onDetailsDialogChange: (open: boolean) => void;
   onAddTime: (minutes: number) => void;
+  onStartTimer: (durationMinutes: number) => void;
   onStartTimerWithDates: (startTime: string, endTime: string) => void;
   onUpdateTimerDates: (startTime: string, endTime: string) => void;
 }
@@ -51,6 +52,7 @@ export function UserCardDialogs({
   onAddTimeDialogChange,
   onDetailsDialogChange,
   onAddTime,
+  onStartTimer,
   onStartTimerWithDates,
   onUpdateTimerDates,
 }: UserCardDialogsProps) {
@@ -59,10 +61,24 @@ export function UserCardDialogs({
   /**
    * Handles adding time via custom dialog
    * Converts hours and minutes to total minutes
+   * Se il timer non è attivo e il valore è positivo, avvia il timer
+   * Se il timer non è attivo e il valore è negativo, mostra un avviso
    */
   const handleAddTimeFromDialog = (hours: number, minutes: number) => {
     const totalMinutes = toTotalMinutes(hours, minutes);
-    onAddTime(totalMinutes);
+    
+    // Se il timer non è attivo
+    if (!isTimerActive) {
+      // Se il valore è positivo, avvia il timer
+      if (totalMinutes > 0) {
+        onStartTimer(totalMinutes);
+      }
+      // Se il valore è negativo, l'avviso viene già mostrato nel dialog
+      // Non fare nulla qui
+    } else {
+      // Se il timer è attivo, aggiungi/sottrai tempo
+      onAddTime(totalMinutes);
+    }
   };
 
   /**
@@ -85,6 +101,7 @@ export function UserCardDialogs({
         onConfirm={handleAddTimeFromDialog}
         onConfirmWithDates={handleStartTimerWithDates}
         isTimerActive={isTimerActive}
+        onStartTimer={onStartTimer}
         currentStartTime={timer?.startTime ?? null}
         currentEndTime={timer?.endTime ?? null}
       />

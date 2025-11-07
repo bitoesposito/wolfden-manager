@@ -103,7 +103,9 @@
       "invalidDateTime": "Data/ora non valida",
       "invalidDateTimeDescription": "La data/ora di fine deve essere successiva a quella di inizio.",
       "conversionError": "Errore nella conversione delle date",
-      "conversionErrorDescription": "Si è verificato un errore. Riprova."
+      "conversionErrorDescription": "Si è verificato un errore. Riprova.",
+      "cannotSubtractWhenInactive": "Impossibile sottrarre tempo",
+      "cannotSubtractWhenInactiveDescription": "Non puoi sottrarre tempo quando il timer non è ancora avviato. Avvia prima il timer con un valore positivo."
     },
     "success": {
       "timerUpdated": "Timer aggiornato",
