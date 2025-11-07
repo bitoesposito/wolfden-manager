@@ -15,16 +15,21 @@ import {
 } from '@/components/ui/alert-dialog';
 import { ListX, Plus } from 'lucide-react';
 import { UserCard } from '@/components/cards/user-card';
-import { useUserCards } from '@/hooks/use-user-cards';
+import { useAppStore } from '@/store';
+import { useSectionCards } from '@/hooks';
+import { useI18n } from '@/hooks/use-i18n';
 import type { SectionItemProps } from '@/types';
 
 export function SectionItem({
   editMode,
+  sectionId,
   sectionName,
   onSectionNameChange,
   onDeleteSection,
 }: SectionItemProps) {
-  const { cards, addCard, deleteCard, updateCardName, startTimer, addTimeToTimer, clearTimer } = useUserCards();
+  const { addCard } = useAppStore();
+  const cards = useSectionCards(sectionId);
+  const { t } = useI18n();
 
   return (
     <section
@@ -37,7 +42,7 @@ export function SectionItem({
             value={sectionName}
             onChange={(e) => onSectionNameChange?.(e.target.value)}
             className="font-bold uppercase w-auto"
-            placeholder='Nome sezione'
+            placeholder={t('section.name')}
           />
         ) : (
           <h2 className="font-bold uppercase">{sectionName}</h2>
@@ -48,23 +53,23 @@ export function SectionItem({
             <AlertDialogTrigger asChild>
               <Button variant="outline">
                 <ListX className="w-fit" />
-                Elimina sezione
+                {t('section.delete')}
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>Elimina sezione</AlertDialogTitle>
+                <AlertDialogTitle>{t('section.delete')}</AlertDialogTitle>
                 <AlertDialogDescription>
-                  Sei sicuro di voler eliminare questa sezione? Questa azione non può essere annullata.
+                  {t('section.deleteConfirm')}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>Annulla</AlertDialogCancel>
+                <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
                 <AlertDialogAction
                   onClick={onDeleteSection}
                   className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                 >
-                  Elimina
+                  {t('common.delete')}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -75,22 +80,18 @@ export function SectionItem({
       {cards.map((card) => (
         <UserCard
           key={card.id}
+          sectionId={sectionId}
           id={card.id}
           name={card.name}
           progressValue={card.progressValue}
           editMode={editMode}
           timer={card.timer}
-          onNameChange={(name) => updateCardName(card.id, name)}
-          onDelete={() => deleteCard(card.id)}
-          onTimerStart={(durationMinutes) => startTimer(card.id, durationMinutes)}
-          onTimerAddTime={(minutes) => addTimeToTimer(card.id, minutes)}
-          onTimerClear={() => clearTimer(card.id)}
         />
       ))}
 
       {editMode && (
-        <Button variant="outline" className="w-full h-full" onClick={addCard} >
-          <Plus />Nuova postazione
+        <Button variant="outline" className="w-full h-full" onClick={() => addCard(sectionId)} >
+          <Plus />{t('section.newCard')}
         </Button>
       )}
     </section>

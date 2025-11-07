@@ -4,8 +4,9 @@ export interface Section {
 }
 
 export interface TimerState {
-  startTime: string | null;
-  endTime: string | null;
+  // Timestamp ISO completi per gestire correttamente date e ore
+  startTime: string | null; // ISO timestamp (es. "2024-01-15T14:30:00+01:00")
+  endTime: string | null;   // ISO timestamp (es. "2024-01-15T15:30:00+01:00")
   initialDurationMinutes: number;
   isActive: boolean;
 }
@@ -19,6 +20,7 @@ export interface UserCard {
 
 export interface SectionItemProps {
   editMode: boolean;
+  sectionId: number;
   sectionName: string;
   onSectionNameChange?: (name: string) => void;
   onAddSection?: () => void;
@@ -26,16 +28,12 @@ export interface SectionItemProps {
 }
 
 export interface UserCardProps {
+  sectionId: number;
   id: number;
   name: string;
   progressValue: number;
   editMode: boolean;
   timer?: TimerState;
-  onNameChange?: (name: string) => void;
-  onDelete?: () => void;
-  onTimerStart?: (durationMinutes: number) => void;
-  onTimerAddTime?: (minutes: number) => void;
-  onTimerClear?: () => void;
 }
 
 export interface HeaderProps {

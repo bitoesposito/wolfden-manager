@@ -1,171 +1,141 @@
+/**
+ * Main user card component
+ * Orchestrates all sub-components and hooks
+ * Separation of concerns: this component coordinates, doesn't implement
+ */
+
 "use client"
 
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { useState, useCallback } from 'react';
+import { Card } from '@/components/ui/card';
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
-import {
-  Play,
-  SkipForward,
-  X,
-  ClockPlus,
-  ClockFading,
-  ChevronDown,
-} from 'lucide-react';
-import { ButtonGroup } from '@/components/ui/button-group';
-import { AddTimeDialog } from '@/components/cards/add-time-dialog';
+  ContextMenu,
+  ContextMenuTrigger,
+} from '@/components/ui/context-menu';
+import { UserCardHeader } from '@/components/cards/user-card-header';
+import { UserCardContent } from '@/components/cards/user-card-content';
+import { UserCardContextMenu } from '@/components/cards/user-card-context-menu';
+import { UserCardDialogs } from '@/components/cards/user-card-dialogs';
+import { useTimerCalculations, useCardActions, useCardInteractions } from '@/hooks';
 import type { UserCardProps } from '@/types';
 
+/**
+ * Main card for managing a user's timer
+ * Uses separate components for header, content, context menu, and dialogs
+ * Uses dedicated hooks for business logic and interactions
+ */
 export function UserCard({
+  sectionId,
+  id,
   name,
   progressValue,
   editMode,
   timer,
-  onNameChange,
-  onDelete,
-  onTimerStart,
-  onTimerAddTime,
-  onTimerClear,
 }: UserCardProps) {
+  // Local state only for dialogs
   const [addTimeDialogOpen, setAddTimeDialogOpen] = useState(false);
+  const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+
+  // Hook for card actions (business logic)
+  const {
+    updateCardName,
+    deleteCard,
+    startTimer,
+    startTimerWithDates,
+    updateTimerDates,
+    addTimeToTimer,
+    clearTimer,
+  } = useCardActions(sectionId, id);
+
+  // Hook for timer calculations (presentation logic)
+  const { remainingTime, isExpired, progressVariant } = useTimerCalculations(timer);
+
   const isTimerActive = timer?.isActive ?? false;
-  const startTime = timer?.startTime ?? '00:00';
-  const endTime = timer?.endTime ?? '00:00';
 
-  const handleStartTimer = (durationMinutes: number) => {
-    onTimerStart?.(durationMinutes);
-  };
+  // Handlers for timer actions
+  const handleStartTimer = useCallback((durationMinutes: number) => {
+    startTimer(durationMinutes);
+  }, [startTimer]);
 
-  const handleAddTime = (minutes: number) => {
-    onTimerAddTime?.(minutes);
-  };
+  const handleAddTime = useCallback((minutes: number) => {
+    addTimeToTimer(minutes);
+  }, [addTimeToTimer]);
 
-  const handleAddTimeFromDialog = (hours: number, minutes: number) => {
-    const totalMinutes = hours * 60 + minutes;
-    handleAddTime(totalMinutes);
-  };
+  const handleQuickAdd = useCallback(() => {
+    if (isTimerActive) {
+      handleAddTime(60);
+    } else {
+      handleStartTimer(60);
+    }
+  }, [isTimerActive, handleAddTime, handleStartTimer]);
+
+  // Hook for interactions (hover, keyboard shortcuts, double click)
+  const {
+    handleDoubleClick,
+    handleMouseEnter,
+    handleMouseLeave,
+  } = useCardInteractions({
+    isTimerActive,
+    onStartTimer: handleStartTimer,
+    onAddTime: handleAddTime,
+    onOpenCustomDialog: () => setAddTimeDialogOpen(true),
+  });
 
   return (
-    <Card className="p-3 gap-1">
-      <CardHeader className="flex px-0 items-center">
-        {editMode ? (
-          <Input
-            value={name}
-            onChange={(e) => onNameChange?.(e.target.value)}
-            className="text-ellipsis overflow-hidden w-full whitespace-nowrap font-semibold uppercase"
-            style={{ marginRight: editMode ? "2.5rem" : "0" }}
-            placeholder='Nome postazione'
+    <ContextMenu>
+      <ContextMenuTrigger asChild>
+        <Card
+          className="p-3 gap-1 cursor-pointer"
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          onDoubleClick={handleDoubleClick}
+        >
+          <UserCardHeader
+            name={name}
+            editMode={editMode}
+            timer={timer}
+            onNameChange={updateCardName}
           />
-        ) : (
-          <CardTitle className="text-ellipsis overflow-hidden w-full whitespace-nowrap">
-            {name}
-          </CardTitle>
-        )}
 
-        <div className="flex items-center gap-1">
-          <Play className="text-muted-foreground" size={16} />
-          <span className="text-sm text-muted-foreground mr-2">{startTime}</span>
-          <SkipForward className="text-muted-foreground" size={16} />
-          <span className="text-sm text-muted-foreground">{endTime}</span>
-        </div>
-      </CardHeader>
+          <UserCardContent
+            progressValue={progressValue}
+            isExpired={isExpired}
+            progressVariant={progressVariant}
+            remainingTime={remainingTime}
+            isTimerActive={isTimerActive}
+            editMode={editMode}
+            cardName={name}
+            onQuickAdd={handleQuickAdd}
+            onClearTimer={clearTimer}
+            onDeleteCard={deleteCard}
+          />
+        </Card>
+      </ContextMenuTrigger>
 
-      <CardContent className="px-0 flex gap-2 items-center">
-        <Progress value={progressValue} />
-
-        <div className="flex items-center gap-1">
-          <ButtonGroup>
-            <Button
-              variant="outline"
-              disabled={isTimerActive}
-              onClick={() => !isTimerActive && handleStartTimer(60)}
-            >
-              <ClockPlus />
-            </Button>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="!pl-2" disabled={!isTimerActive}>
-                  <ChevronDown />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="[--radius:1rem]">
-                <DropdownMenuItem onClick={() => handleAddTime(30)}>
-                  +30 minuti
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAddTime(60)}>
-                  +1 ora<span className="text-muted-foreground text-xs">(default)</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => handleAddTime(120)}>
-                  +2 ore
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setAddTimeDialogOpen(true)}>
-                  Altro...
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </ButtonGroup>
-
-          <Button
-            variant="outline"
-            onClick={() => onTimerClear?.()}
-            disabled={!isTimerActive}
-          >
-            <ClockFading />
-          </Button>
-
-          {editMode && (
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="outline">
-                  <X />
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Elimina postazione</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Sei sicuro di voler eliminare la postazione "{name}"? Questa azione non può essere annullata.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Annulla</AlertDialogCancel>
-                  <AlertDialogAction
-                    onClick={onDelete}
-                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                  >
-                    Elimina
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          )}
-        </div>
-      </CardContent>
-
-      <AddTimeDialog
-        open={addTimeDialogOpen}
-        onOpenChange={setAddTimeDialogOpen}
-        onConfirm={handleAddTimeFromDialog}
+      <UserCardContextMenu
+        isTimerActive={isTimerActive}
+        editMode={editMode}
+        onStartTimer={handleStartTimer}
+        onAddTime={handleAddTime}
+        onOpenCustomDialog={() => setAddTimeDialogOpen(true)}
+        onOpenDetailsDialog={() => setDetailsDialogOpen(true)}
+        onClearTimer={clearTimer}
+        onDeleteCard={deleteCard}
       />
-    </Card>
+
+      <UserCardDialogs
+        addTimeDialogOpen={addTimeDialogOpen}
+        detailsDialogOpen={detailsDialogOpen}
+        isTimerActive={isTimerActive}
+        timer={timer}
+        remainingTime={remainingTime}
+        isExpired={isExpired}
+        onAddTimeDialogChange={setAddTimeDialogOpen}
+        onDetailsDialogChange={setDetailsDialogOpen}
+        onAddTime={handleAddTime}
+        onStartTimerWithDates={startTimerWithDates}
+        onUpdateTimerDates={updateTimerDates}
+      />
+    </ContextMenu>
   );
 }
-

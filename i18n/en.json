@@ -1,0 +1,131 @@
+{
+  "common": {
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "delete": "Delete",
+    "active": "Active",
+    "expired": "Expired",
+    "remaining": "remaining",
+    "minutes": "minutes",
+    "hours": "hours",
+    "hour": "hour",
+    "min": "min",
+    "minute": "minute",
+    "data": "Date",
+    "time": "Time",
+    "name": "Name"
+  },
+  "header": {
+    "title": "WolfDen",
+    "subtitle": "LAN MANAGER",
+    "toggleTheme": "Toggle theme",
+    "theme": {
+      "light": "Light",
+      "dark": "Dark",
+      "system": "System"
+    }
+  },
+  "home": {
+    "newSection": "New section"
+  },
+  "section": {
+    "name": "Section name",
+    "delete": "Delete section",
+    "deleteConfirm": "Are you sure you want to delete this section? This action cannot be undone.",
+    "newCard": "New station"
+  },
+  "card": {
+    "delete": "Delete station",
+    "deleteConfirm": "Are you sure you want to delete the station \"{name}\"? This action cannot be undone.",
+    "quickAdd": "Add 1 hour",
+    "quickStart": "Start timer (1 hour)",
+    "resetTimer": "Reset timer",
+    "addHour": "Add 1 hour",
+    "startTimer": "Start timer (1 hour)",
+    "namePlaceholder": "Station name"
+  },
+  "contextMenu": {
+    "startTimer": {
+      "oneHour": "Start timer (1 hour)",
+      "quickStart": "Quick start",
+      "durations": {
+        "30min": "30 minutes",
+        "1hour": "1 hour",
+        "2hours": "2 hours"
+      },
+      "custom": "Custom duration..."
+    },
+    "timerActive": {
+      "addOneHour": "Add 1 hour",
+      "addTime": "Add time",
+      "removeTime": "Remove time",
+      "customTime": "Custom time...",
+      "details": "Timer details",
+      "reset": "Reset timer",
+      "durations": {
+        "30min": "30 minutes",
+        "1hour": "1 hour",
+        "2hours": "2 hours"
+      }
+    }
+  },
+  "addTimeDialog": {
+    "title": "Add or remove time",
+    "description": "Choose between duration or specific dates/times.",
+    "modes": {
+      "duration": "Duration",
+      "dates": "Date/time"
+    },
+    "quickChoices": "Quick choices",
+    "quickValues": {
+      "plus15min": "+15 min",
+      "plus30min": "+30 min",
+      "plus1hour": "+1 hour",
+      "plus2hours": "+2 hours",
+      "minus15min": "-15 min",
+      "minus30min": "-30 min",
+      "minus1hour": "-1 hour",
+      "minus2hours": "-2 hours"
+    },
+    "labels": {
+      "hours": "Hours",
+      "minutes": "Minutes",
+      "hoursPlaceholder": "Hours",
+      "minutesPlaceholder": "Minutes",
+      "startDateTime": "Start date and time",
+      "endDateTime": "End date and time",
+      "date": "Date",
+      "time": "Time"
+    },
+    "errors": {
+      "invalidDates": "Invalid dates or times",
+      "invalidDatesDescription": "Check the entered values and try again.",
+      "invalidDateTime": "Invalid date/time",
+      "invalidDateTimeDescription": "The end date/time must be after the start date/time.",
+      "conversionError": "Date conversion error",
+      "conversionErrorDescription": "An error occurred. Please try again."
+    },
+    "success": {
+      "timerUpdated": "Timer updated",
+      "timerStarted": "Timer started",
+      "timerRange": "From {start} to {end}"
+    }
+  },
+  "timerDetails": {
+    "title": "Timer details",
+    "description": "Detailed information about the active timer",
+    "sections": {
+      "status": "Status",
+      "period": "Period",
+      "durations": "Durations"
+    },
+    "fields": {
+      "remainingTime": "Remaining time",
+      "startDateTime": "Start date and time",
+      "endDateTime": "End date and time",
+      "initialDuration": "Initial duration",
+      "totalDuration": "Total duration"
+    }
+  }
+}
+
