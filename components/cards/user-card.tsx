@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
@@ -30,15 +31,38 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import { ButtonGroup } from '@/components/ui/button-group';
+import { AddTimeDialog } from '@/components/cards/add-time-dialog';
 import type { UserCardProps } from '@/types';
 
 export function UserCard({
   name,
   progressValue,
   editMode,
+  timer,
   onNameChange,
   onDelete,
+  onTimerStart,
+  onTimerAddTime,
+  onTimerClear,
 }: UserCardProps) {
+  const [addTimeDialogOpen, setAddTimeDialogOpen] = useState(false);
+  const isTimerActive = timer?.isActive ?? false;
+  const startTime = timer?.startTime ?? '00:00';
+  const endTime = timer?.endTime ?? '00:00';
+
+  const handleStartTimer = (durationMinutes: number) => {
+    onTimerStart?.(durationMinutes);
+  };
+
+  const handleAddTime = (minutes: number) => {
+    onTimerAddTime?.(minutes);
+  };
+
+  const handleAddTimeFromDialog = (hours: number, minutes: number) => {
+    const totalMinutes = hours * 60 + minutes;
+    handleAddTime(totalMinutes);
+  };
+
   return (
     <Card className="p-3 gap-1">
       <CardHeader className="flex px-0 items-center">
@@ -58,9 +82,9 @@ export function UserCard({
 
         <div className="flex items-center gap-1">
           <Play className="text-muted-foreground" size={16} />
-          <span className="text-sm text-muted-foreground mr-2">00:00</span>
+          <span className="text-sm text-muted-foreground mr-2">{startTime}</span>
           <SkipForward className="text-muted-foreground" size={16} />
-          <span className="text-sm text-muted-foreground">00:00</span>
+          <span className="text-sm text-muted-foreground">{endTime}</span>
         </div>
       </CardHeader>
 
@@ -69,27 +93,41 @@ export function UserCard({
 
         <div className="flex items-center gap-1">
           <ButtonGroup>
-            <Button variant="outline">
+            <Button
+              variant="outline"
+              disabled={isTimerActive}
+              onClick={() => !isTimerActive && handleStartTimer(60)}
+            >
               <ClockPlus />
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="!pl-2">
+                <Button variant="outline" className="!pl-2" disabled={!isTimerActive}>
                   <ChevronDown />
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="[--radius:1rem]">
-                <DropdownMenuItem>+30 minuti</DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAddTime(30)}>
+                  +30 minuti
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAddTime(60)}>
                   +1 ora<span className="text-muted-foreground text-xs">(default)</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>+2 ore</DropdownMenuItem>
-                <DropdownMenuItem>Altro...</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleAddTime(120)}>
+                  +2 ore
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setAddTimeDialogOpen(true)}>
+                  Altro...
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </ButtonGroup>
 
-          <Button variant="outline">
+          <Button
+            variant="outline"
+            onClick={() => onTimerClear?.()}
+            disabled={!isTimerActive}
+          >
             <ClockFading />
           </Button>
 
@@ -121,6 +159,12 @@ export function UserCard({
           )}
         </div>
       </CardContent>
+
+      <AddTimeDialog
+        open={addTimeDialogOpen}
+        onOpenChange={setAddTimeDialogOpen}
+        onConfirm={handleAddTimeFromDialog}
+      />
     </Card>
   );
 }

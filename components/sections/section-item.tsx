@@ -24,7 +24,7 @@ export function SectionItem({
   onSectionNameChange,
   onDeleteSection,
 }: SectionItemProps) {
-  const { cards, addCard, deleteCard, updateCardName } = useUserCards();
+  const { cards, addCard, deleteCard, updateCardName, startTimer, addTimeToTimer, clearTimer } = useUserCards();
 
   return (
     <section
@@ -79,8 +79,12 @@ export function SectionItem({
           name={card.name}
           progressValue={card.progressValue}
           editMode={editMode}
+          timer={card.timer}
           onNameChange={(name) => updateCardName(card.id, name)}
           onDelete={() => deleteCard(card.id)}
+          onTimerStart={(durationMinutes) => startTimer(card.id, durationMinutes)}
+          onTimerAddTime={(minutes) => addTimeToTimer(card.id, minutes)}
+          onTimerClear={() => clearTimer(card.id)}
         />
       ))}
 
