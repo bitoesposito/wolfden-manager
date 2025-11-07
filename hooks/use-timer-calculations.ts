@@ -57,11 +57,20 @@ export function useTimerCalculations(timer: TimerState | undefined) {
     const remainingMinutes = Math.floor(remainingSeconds / 60);
     
     // Determine progress bar variant based on remaining time
-    // Red if <= 5 minutes or expired, orange if <= 10 minutes, default otherwise
-    let progressVariant: "default" | "warning" | "destructive" = "default";
-    if (isExpired || remainingMinutes <= 5) {
+    // Verde (default): > 30 minuti o 00:00 (timer non avviato)
+    // Giallo (warning): <= 30 minuti
+    // Arancio (orange): <= 20 minuti
+    // Rosso (destructive): <= 10 minuti o scaduto (ma non 00:00)
+    let progressVariant: "default" | "warning" | "orange" | "destructive" = "default";
+    
+    // Se è 00:00 (remainingSeconds === 0), usa sempre default
+    if (remainingSeconds === 0) {
+      progressVariant = "default";
+    } else if (isExpired || remainingMinutes <= 10) {
       progressVariant = "destructive";
-    } else if (remainingMinutes <= 10) {
+    } else if (remainingMinutes <= 20) {
+      progressVariant = "orange";
+    } else if (remainingMinutes <= 30) {
       progressVariant = "warning";
     }
 

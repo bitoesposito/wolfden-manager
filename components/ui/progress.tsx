@@ -8,14 +8,19 @@ import { cn } from "@/lib/utils"
 function Progress({
   className,
   value,
-  variant = "default",
+  variant,
   ...props
 }: React.ComponentProps<typeof ProgressPrimitive.Root> & {
-  variant?: "default" | "warning" | "destructive"
+  variant?: "default" | "warning" | "orange" | "destructive"
 }) {
   const displayValue = value || 0;
   
   // Determine colors based on variant
+  // Colore primario (undefined): timer non avviato o barra vuota
+  // Verde (default): timer attivo con > 30 minuti
+  // Giallo (warning): <= 30 minuti
+  // Arancio (orange): <= 20 minuti
+  // Rosso (destructive): <= 10 minuti o scaduto
   const getColors = () => {
     switch (variant) {
       case "destructive":
@@ -23,12 +28,23 @@ function Progress({
           bg: "bg-destructive/20",
           indicator: "bg-destructive"
         };
-      case "warning":
+      case "orange":
         return {
           bg: "bg-orange-500/20",
           indicator: "bg-orange-500"
         };
+      case "warning":
+        return {
+          bg: "bg-yellow-500/20",
+          indicator: "bg-yellow-500"
+        };
+      case "default":
+        return {
+          bg: "bg-green-500/20",
+          indicator: "bg-green-500"
+        };
       default:
+        // Colore primario del tema quando variant è undefined (timer non avviato)
         return {
           bg: "bg-primary/20",
           indicator: "bg-primary"
