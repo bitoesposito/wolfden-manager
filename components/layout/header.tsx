@@ -15,11 +15,17 @@ import { getCurrentTimeStringWithSeconds } from '@/lib/utils/time';
 import { useI18n } from '@/hooks/use-i18n';
 import type { HeaderProps } from '@/types';
 import { Logo } from './logo';
+import { initializeAudio } from '@/lib/utils/sound';
 
 export function Header({ editMode, toggleEditMode }: HeaderProps) {
   const { setTheme } = useTheme();
   const { t } = useI18n();
   const [timeString, setTimeString] = useState(getCurrentTimeStringWithSeconds());
+
+  // Initialize audio on mount to unlock playback
+  useEffect(() => {
+    initializeAudio();
+  }, []);
 
   // Update time every second
   useEffect(() => {

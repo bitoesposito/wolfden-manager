@@ -1,8 +1,9 @@
 "use client"
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import type { TimerState } from '@/types';
 import { getRemainingSeconds, calculateProgress, formatRemainingTime, isTimerExpired } from '@/lib/utils/time';
+import { playTimerExpiredSound } from '@/lib/utils/sound';
 
 /**
  * Hook to calculate derived values from a timer state
@@ -14,10 +15,12 @@ import { getRemainingSeconds, calculateProgress, formatRemainingTime, isTimerExp
 export function useTimerCalculations(timer: TimerState | undefined) {
   // Force re-calculation frequently by updating a timestamp
   const [currentTimestamp, setCurrentTimestamp] = useState(Date.now());
+  const previousExpiredRef = useRef(false);
 
   useEffect(() => {
     // Only set up interval if timer is active
     if (!timer?.isActive || !timer.endTime) {
+      previousExpiredRef.current = false;
       return;
     }
 
@@ -57,13 +60,13 @@ export function useTimerCalculations(timer: TimerState | undefined) {
     const remainingMinutes = Math.floor(remainingSeconds / 60);
     
     // Determine progress bar variant based on remaining time
-    // Verde (default): > 30 minuti o 00:00 (timer non avviato)
-    // Giallo (warning): <= 30 minuti
-    // Arancio (orange): <= 20 minuti
-    // Rosso (destructive): <= 10 minuti o scaduto (ma non 00:00)
+    // Green (default): > 30 minutes or 00:00 (timer not started)
+    // Yellow (warning): <= 30 minutes
+    // Orange: <= 20 minutes
+    // Red (destructive): <= 10 minutes or expired (but not 00:00)
     let progressVariant: "default" | "warning" | "orange" | "destructive" = "default";
     
-    // Se è 00:00 (remainingSeconds === 0), usa sempre default
+    // If 00:00 (remainingSeconds === 0), always use default
     if (remainingSeconds === 0) {
       progressVariant = "default";
     } else if (isExpired || remainingMinutes <= 10) {
@@ -82,6 +85,20 @@ export function useTimerCalculations(timer: TimerState | undefined) {
       progressVariant,
     };
   }, [timer?.isActive, timer?.endTime, timer?.initialDurationMinutes, currentTimestamp]);
+
+  // Play sound when timer expires (transition from not expired to expired)
+  useEffect(() => {
+    const isExpired = calculations.isExpired;
+    
+    if (isExpired && !previousExpiredRef.current) {
+      // Timer just expired: play sound
+      playTimerExpiredSound();
+      previousExpiredRef.current = true;
+    } else if (!isExpired) {
+      // Reset when timer is no longer expired
+      previousExpiredRef.current = false;
+    }
+  }, [calculations.isExpired]);
 
   return calculations;
 }
