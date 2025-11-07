@@ -9,11 +9,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { PencilRuler, Moon, Sun } from 'lucide-react';
+import { PencilRuler, Moon, Sun, Check } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { getCurrentTimeStringWithSeconds } from '@/lib/utils/time';
 import { useI18n } from '@/hooks/use-i18n';
 import type { HeaderProps } from '@/types';
+import { Logo } from './logo';
 
 export function Header({ editMode, toggleEditMode }: HeaderProps) {
   const { setTheme } = useTheme();
@@ -31,9 +32,15 @@ export function Header({ editMode, toggleEditMode }: HeaderProps) {
 
   return (
     <header className="flex items-center justify-between">
-      <h1 className="text-2xl font-bold whitespace-nowrap overflow-hidden text-ellipsis select-none">
-        {t('header.title')} <span className="text-muted-foreground text-sm">{t('header.subtitle')}</span>
-      </h1>
+      <div className="flex gap-2 items-center">
+        <Logo className="w-12 h-12" />
+          <div className="flex flex-col gap-0">
+            <h1 className="text-2xl font-bold whitespace-nowrap overflow-hidden text-ellipsis select-none flex items-center gap-2 m-0 p-0 leading-none">
+            {t('header.title')} 
+          </h1>
+          <span className="text-muted-foreground text-sm font-bold">{t('header.subtitle')}</span>
+          </div>
+      </div>
       <div className="flex items-center gap-1">
         <Input
           type="time"
@@ -57,8 +64,11 @@ export function Header({ editMode, toggleEditMode }: HeaderProps) {
             <DropdownMenuItem onClick={() => setTheme('system')}>{t('header.theme.system')}</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <Button variant="outline" onClick={toggleEditMode}>
-          <PencilRuler />
+        <Button 
+          variant={editMode ? "success" : "outline"} 
+          onClick={toggleEditMode}
+        >
+          {editMode ? <Check /> : <PencilRuler />}
         </Button>
       </div>
     </header>

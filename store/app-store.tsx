@@ -22,7 +22,7 @@ import { loadState, saveState, type AppState } from '@/lib/storage/persistence.s
 
 // Initial state
 const INITIAL_CARDS: UserCard[] = [{ id: 1, name: '1', progressValue: 0 }];
-const INITIAL_SECTIONS: Section[] = [{ id: 1, name: 'Section name' }];
+const INITIAL_SECTIONS: Section[] = [{ id: 1, name: '' }];
 
 interface AppStoreContextValue {
   // Sections

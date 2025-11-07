@@ -13,7 +13,7 @@ export function createSection(existingSections: Section[]): Section {
   const newId = generateNextId(existingSections.map((s) => s.id));
   return {
     id: newId,
-    name: 'Section name',
+    name: '',
   };
 }
 
