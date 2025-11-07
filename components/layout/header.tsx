@@ -32,10 +32,10 @@ export function Header({ editMode, toggleEditMode }: HeaderProps) {
 
   return (
     <header className="flex items-center justify-between">
-      <div className="flex gap-2 items-center">
+      <div className="flex gap-2 items-center select-none">
         <Logo className="w-12 h-12" />
           <div className="flex flex-col gap-0">
-            <h1 className="text-2xl font-bold whitespace-nowrap overflow-hidden text-ellipsis select-none flex items-center gap-2 m-0 p-0 leading-none">
+            <h1 className="text-2xl font-bold whitespace-nowrap overflow-hidden text-ellipsis flex items-center gap-2 m-0 p-0 leading-none">
             {t('header.title')} 
           </h1>
           <span className="text-muted-foreground text-sm font-bold">{t('header.subtitle')}</span>

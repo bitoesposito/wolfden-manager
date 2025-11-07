@@ -15,7 +15,7 @@ export function HomeClient() {
   const { t } = useI18n();
 
   return (
-    <main className="flex flex-col gap-2">
+    <main className="flex flex-col gap-3">
       <Header editMode={editMode} toggleEditMode={toggleEditMode} />
 
       {sections.map((section) => (

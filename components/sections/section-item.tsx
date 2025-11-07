@@ -31,51 +31,56 @@ export function SectionItem({
   const cards = useSectionCards(sectionId);
   const { t } = useI18n();
 
+  // Mostra il div header solo se siamo in editMode o se c'è un titolo da mostrare
+  const showHeader = editMode || sectionName !== '';
+
   return (
     <section
       className="grid gap-2 items-center"
       style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(20rem, 1fr))' }}
     >
-      <div className="col-span-full flex items-center justify-between h-10 gap-2">
-        {editMode ? (
-          <Input
-            value={sectionName}
-            onChange={(e) => onSectionNameChange?.(e.target.value)}
-            className="font-bold uppercase w-auto"
-            placeholder={t('section.name')}
-          />
-        ) : (
-          <h2 className="font-bold uppercase">{sectionName}</h2>
-        )}
+      {showHeader && (
+        <div className="col-span-full flex items-center justify-between h-10 gap-2">
+          {editMode ? (
+            <Input
+              value={sectionName}
+              onChange={(e) => onSectionNameChange?.(e.target.value)}
+              className="font-bold uppercase w-auto"
+              placeholder={t('section.name')}
+            />
+          ) : (
+            sectionName !== '' && <h2 className="font-bold uppercase">{sectionName}</h2>
+          )}
 
-        {editMode && (
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="outline">
-                <ListX className="w-fit" />
-                {t('section.delete')}
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>{t('section.delete')}</AlertDialogTitle>
-                <AlertDialogDescription>
-                  {t('section.deleteConfirm')}
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={onDeleteSection}
-                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                >
-                  {t('common.delete')}
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        )}
-      </div>
+          {editMode && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline">
+                  <ListX className="w-fit" />
+                  {t('section.delete')}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>{t('section.delete')}</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {t('section.deleteConfirm')}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={onDeleteSection}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    {t('common.delete')}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+        </div>
+      )}
 
       {cards.map((card) => (
         <UserCard
