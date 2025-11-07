@@ -19,6 +19,9 @@
     "title": "WolfDen",
     "subtitle": "LAN MANAGER",
     "toggleTheme": "Toggle theme",
+    "toggleAudio": "Toggle audio",
+    "audioMuted": "Audio muted",
+    "audioUnmuted": "Audio unmuted",
     "theme": {
       "light": "Light",
       "dark": "Dark",

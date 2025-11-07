@@ -16,6 +16,21 @@ export function useTimerCalculations(timer: TimerState | undefined) {
   // Force re-calculation frequently by updating a timestamp
   const [currentTimestamp, setCurrentTimestamp] = useState(Date.now());
   const previousExpiredRef = useRef(false);
+  const hasInitializedRef = useRef(false);
+
+  // Inizializza previousExpiredRef in base allo stato iniziale del timer
+  // Se il timer è già scaduto al mount, non riprodurre il suono
+  useEffect(() => {
+    if (!hasInitializedRef.current && timer?.isActive && timer.endTime) {
+      const remainingSeconds = getRemainingSeconds(timer.endTime);
+      const isExpired = isTimerExpired(remainingSeconds);
+      // Se è già scaduto al mount, segna come già gestito per evitare il suono al reload
+      previousExpiredRef.current = isExpired;
+      hasInitializedRef.current = true;
+    } else if (!timer?.isActive) {
+      hasInitializedRef.current = false;
+    }
+  }, [timer?.isActive, timer?.endTime]);
 
   useEffect(() => {
     // Only set up interval if timer is active

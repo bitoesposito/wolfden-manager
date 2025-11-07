@@ -8,17 +8,19 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { PencilRuler, Moon, Sun, Check } from 'lucide-react';
+import { PencilRuler, Moon, Sun, Check, Volume2, VolumeX, Play } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { getCurrentTimeStringWithSeconds } from '@/lib/utils/time';
 import { useI18n } from '@/hooks/use-i18n';
+import { useAudio } from '@/hooks/use-audio';
 import type { HeaderProps } from '@/types';
 import { Logo } from './logo';
-import { initializeAudio } from '@/lib/utils/sound';
+import { initializeAudio, playTimerExpiredSound } from '@/lib/utils/sound';
 
 export function Header({ editMode, toggleEditMode }: HeaderProps) {
   const { setTheme } = useTheme();
   const { t } = useI18n();
+  const { muted, toggle: toggleAudio } = useAudio();
   const [timeString, setTimeString] = useState(getCurrentTimeStringWithSeconds());
 
   // Initialize audio on mount to unlock playback
@@ -50,6 +52,28 @@ export function Header({ editMode, toggleEditMode }: HeaderProps) {
         <span className="select-none px-2 text-center text-sm">
           {timeString}
         </span>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={toggleAudio}
+          title={muted ? t('header.audioMuted') : t('header.audioUnmuted')}
+        >
+          {muted ? (
+            <VolumeX className="h-[1.2rem] w-[1.2rem]" />
+          ) : (
+            <Volume2 className="h-[1.2rem] w-[1.2rem]" />
+          )}
+          <span className="sr-only">{t('header.toggleAudio')}</span>
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => playTimerExpiredSound()}
+          title="Test audio (debug)"
+        >
+          <Play className="h-[1.2rem] w-[1.2rem]" />
+          <span className="sr-only">Test audio</span>
+        </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="icon">
