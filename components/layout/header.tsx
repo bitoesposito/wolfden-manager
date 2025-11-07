@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -48,14 +47,9 @@ export function Header({ editMode, toggleEditMode }: HeaderProps) {
           </div>
       </div>
       <div className="flex items-center gap-1">
-        <Input
-          type="time"
-          id="time-picker"
-          step="1"
-          disabled
-          className="select-none w-[7rem] text-center"
-          value={timeString}
-        />
+        <span className="select-none px-2 text-center text-sm">
+          {timeString}
+        </span>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="icon">
