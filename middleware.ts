@@ -1,9 +1,9 @@
 /**
- * Middleware for i18n routing
+ * Proxy for i18n routing (replaces deprecated middleware)
  * Handles locale detection and cookie management
  * 
  * Note: For App Router, Next.js doesn't support built-in i18n routing like Pages Router.
- * This middleware handles locale detection and sets it in a cookie for use in components.
+ * This proxy handles locale detection and sets it in a cookie for use in components.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -11,16 +11,16 @@ import { NextRequest, NextResponse } from 'next/server';
 const LOCALES = ['it', 'en'] as const;
 const DEFAULT_LOCALE = 'it';
 
-export function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   
-  // Skip middleware for static files and API routes
+  // Skip proxy for static files and API routes
   if (
     pathname.startsWith('/_next') ||
     pathname.startsWith('/api') ||
     pathname.includes('.')
   ) {
-    return NextResponse.next();
+    return;
   }
 
   // Get locale from cookie, URL, or Accept-Language header
@@ -63,11 +63,4 @@ export function middleware(request: NextRequest) {
   
   return response;
 }
-
-export const config = {
-  // Match all pathnames except static files and API routes
-  matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).*)',
-  ],
-};
 
