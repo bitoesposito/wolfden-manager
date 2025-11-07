@@ -83,7 +83,7 @@ self.addEventListener('fetch', (event) => {
                   return indexPage;
                 }
                 // Se anche la pagina principale non è in cache, restituisci una risposta offline
-                return new Response('App offline - Ricarica quando hai connessione', {
+                return new Response('App non in cache - Ricarica quando hai connessione', {
                   status: 503,
                   headers: { 'Content-Type': 'text/html; charset=utf-8' },
                 });
@@ -91,7 +91,7 @@ self.addEventListener('fetch', (event) => {
             }
             
             // Per altre risorse, restituisci errore 503
-            return new Response('Risorsa non disponibile offline', {
+            return new Response('Risorsa non in cache', {
               status: 503,
               headers: { 'Content-Type': 'text/plain' },
             });
