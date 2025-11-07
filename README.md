@@ -1,2 +1,0 @@
-# wolfden-manager
-# wolfden-manager
