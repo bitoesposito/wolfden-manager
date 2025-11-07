@@ -6,6 +6,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { timestampToTimeString, timeStringToISO } from '@/lib/utils/time';
 import type { TimerState } from '@/types';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+import timezone from 'dayjs/plugin/timezone';
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 interface UseTimeInputsProps {
   timer?: TimerState;
@@ -68,8 +74,18 @@ export function useTimeInputs({ timer, onTimeChange, mounted }: UseTimeInputsPro
     if (onTimeChange && newTime) {
       // Se c'è un timer esistente, mantieni la sua data e cambia solo l'ora
       // Altrimenti usa la data corrente per entrambi
-      const startBaseDate = timer?.startTime;
-      const startISO = timeStringToISO(startTimeValue, startBaseDate);
+      let startISO: string;
+      
+      if (timer?.startTime) {
+        // Timer esistente: mantieni l'ora di inizio esistente
+        startISO = timeStringToISO(startTimeValue, timer.startTime);
+      } else {
+        // Nessun timer: imposta l'ora di inizio all'ora corrente (quando si inserisce l'ora di fine)
+        // Usa la data/ora corrente come base per l'ora di inizio
+        const currentTime = dayjs().tz('Europe/Rome').format('HH:mm');
+        setStartTimeValue(currentTime);
+        startISO = timeStringToISO(currentTime, null);
+      }
       
       // Per l'end time, se esiste un timer usa la sua data, altrimenti usa la data corrente
       const endBaseDate = timer?.endTime || timer?.startTime;

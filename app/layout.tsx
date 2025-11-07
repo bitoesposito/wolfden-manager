@@ -6,6 +6,7 @@ import { PWAProvider } from "@/components/providers/pwa-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { AppStoreProvider } from "@/store";
 import { HtmlLang } from "@/components/layout/html-lang";
+import { ThemeColor } from "@/components/layout/theme-color";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -21,7 +22,10 @@ export const metadata: Metadata = {
   title: "WolfDen Manager",
   description: "Dashboard per la gestione del WolfDen",
   manifest: "/site.webmanifest",
-  themeColor: "#ffffff",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#252525" },
+  ],
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -70,6 +74,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <ThemeColor />
           <AppStoreProvider>
             {children}
             <Toaster />
