@@ -19,7 +19,7 @@ import {
   Clock,
   ClockAlert,
   Plus,
-  RotateCcw,
+  ClockFading,
   Trash2,
   MoreHorizontal,
   Timer,
@@ -189,7 +189,7 @@ export function UserCardContextMenu({
 
           {/* Reset timer */}
           <ContextMenuItem onClick={onClearTimer}>
-            <RotateCcw className="h-4 w-4" />
+            <ClockFading className="h-4 w-4" />
             <span>{t('contextMenu.timerActive.reset')}</span>
           </ContextMenuItem>
         </>
