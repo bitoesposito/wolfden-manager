@@ -35,6 +35,16 @@
     "noSections": "Nessuna sezione disponibile",
     "noSectionsDescription": "Premi il pulsante {editButton} e crea una nuova sezione per iniziare"
   },
+  "validation": {
+    "emptyNames": "Nomi mancanti",
+    "sectionSingular": "sezione",
+    "sectionPlural": "sezioni",
+    "cardSingular": "postazione",
+    "cardPlural": "postazioni",
+    "noValidName": "non ha un nome valido",
+    "noValidNamePlural": "non hanno un nome valido",
+    "pleaseFixNames": "Inserisci un nome valido per tutte le sezioni e postazioni prima di salvare"
+  },
   "section": {
     "name": "Nome sezione",
     "delete": "Elimina sezione",
@@ -43,7 +53,9 @@
     "newCard": "Nuova postazione",
     "noCards": "Nessuna postazione in questa sezione",
     "noCardsDescription": "Premi il pulsante {editButton} e aggiungi una postazione per iniziare",
-    "noCardsDescriptionEditMode": "Aggiungi una postazione per iniziare"
+    "noCardsDescriptionEditMode": "Aggiungi una postazione per iniziare",
+    "lastSectionStationsDeleted": "Postazioni eliminate",
+    "lastSectionStationsDeletedDescription": "Tutte le postazioni dell'ultima sezione sono state eliminate. La sezione è stata mantenuta."
   },
   "card": {
     "delete": "Elimina postazione",

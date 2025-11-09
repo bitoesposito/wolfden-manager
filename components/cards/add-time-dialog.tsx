@@ -29,7 +29,7 @@ interface AddTimeDialogProps {
   onConfirm: (hours: number, minutes: number) => void;
   onConfirmWithDates?: (startTime: string, endTime: string) => void; // ISO timestamps
   isTimerActive?: boolean; // If false, disables negative values (timer not yet started)
-  onStartTimer?: (durationMinutes: number) => void; // Callback per avviare il timer quando non è attivo
+  onStartTimer?: (durationMinutes: number) => void; // Callback to start timer when not active
   currentStartTime?: string | null; // ISO timestamp - to initialize fields when editing an existing timer
   currentEndTime?: string | null; // ISO timestamp - to initialize fields when editing an existing timer
 }

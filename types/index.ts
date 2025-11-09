@@ -22,6 +22,8 @@ export interface SectionItemProps {
   editMode: boolean;
   sectionId: number;
   sectionName: string;
+  totalSections: number;
+  hasCards: boolean;
   onSectionNameChange?: (name: string) => void;
   onAddSection?: () => void;
   onDeleteSection?: () => void;

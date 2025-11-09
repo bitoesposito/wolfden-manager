@@ -21,20 +21,26 @@ import { useAppStore } from '@/store';
 import { useSectionCards } from '@/hooks';
 import { useI18n } from '@/hooks/use-i18n';
 import type { SectionItemProps } from '@/types';
+import { toast } from 'sonner';
 
 export function SectionItem({
   editMode,
   sectionId,
   sectionName,
+  totalSections,
+  hasCards,
   onSectionNameChange,
   onDeleteSection,
 }: SectionItemProps) {
-  const { addCard } = useAppStore();
+  const { addCard, deleteCard } = useAppStore();
   const cards = useSectionCards(sectionId);
   const { t } = useI18n();
 
-  // Mostra il div header solo se siamo in editMode o se c'è un titolo da mostrare
+  // Show header only if in editMode or if there's a title to display
   const showHeader = editMode || sectionName !== '';
+  
+  // If last section, "delete section" will delete stations instead of the section
+  const isLastSection = totalSections === 1;
 
   return (
     <section
@@ -63,11 +69,22 @@ export function SectionItem({
                       <Button 
                         variant="outline"
                         onClick={(e) => {
-                          // Se Shift è premuto, elimina direttamente senza aprire il dialog
-                          if (e.shiftKey && onDeleteSection) {
+                          // If Shift is pressed, delete directly without opening dialog
+                          if (e.shiftKey) {
                             e.preventDefault();
                             e.stopPropagation();
-                            onDeleteSection();
+                            // If last section with stations, delete all stations
+                            if (isLastSection && hasCards) {
+                              cards.forEach((card) => {
+                                deleteCard(sectionId, card.id);
+                              });
+                              toast.info(t('section.lastSectionStationsDeleted'), {
+                                description: t('section.lastSectionStationsDeletedDescription'),
+                              });
+                            } else if (!isLastSection && onDeleteSection) {
+                              // Otherwise delete section if not the last one
+                              onDeleteSection();
+                            }
                           }
                         }}
                       >
@@ -100,15 +117,28 @@ export function SectionItem({
                       {t('section.deleteConfirm')}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={onDeleteSection}
-                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                    >
-                      {t('common.delete')}
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => {
+                      // If last section with stations, delete all stations
+                      if (isLastSection && hasCards) {
+                        cards.forEach((card) => {
+                          deleteCard(sectionId, card.id);
+                        });
+                        toast.info(t('section.lastSectionStationsDeleted'), {
+                          description: t('section.lastSectionStationsDeletedDescription'),
+                        });
+                      } else if (!isLastSection && onDeleteSection) {
+                        // Otherwise delete section if not the last one
+                        onDeleteSection();
+                      }
+                    }}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    {t('common.delete')}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
             </TooltipProvider>

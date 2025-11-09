@@ -42,19 +42,15 @@ export function useTimeInputs({ timer, onTimeChange, mounted }: UseTimeInputsPro
     }
   }, [startTime, endTime, mounted]);
 
-  /**
-   * Gestisce la modifica dell'ora di inizio
-   */
   const handleStartTimeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const newTime = e.target.value;
     setStartTimeValue(newTime);
     
     if (onTimeChange && newTime) {
-      // Se c'è un timer esistente, mantieni la sua data e cambia solo l'ora
-      // Altrimenti usa la data corrente per entrambi
+      // Keep date from existing timer, change only time; otherwise use current date
       const newStartISO = timeStringToISO(newTime, timer?.startTime);
       
-      // Per l'end time, se esiste un timer usa la sua data, altrimenti usa la data corrente
+      // For end time, use timer date if exists, otherwise current date
       const endBaseDate = timer?.endTime || timer?.startTime;
       const endISO = timeStringToISO(endTimeValue, endBaseDate);
       
@@ -64,30 +60,24 @@ export function useTimeInputs({ timer, onTimeChange, mounted }: UseTimeInputsPro
     }
   }, [onTimeChange, endTimeValue, timer]);
 
-  /**
-   * Gestisce la modifica dell'ora di fine
-   */
   const handleEndTimeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const newTime = e.target.value;
     setEndTimeValue(newTime);
     
     if (onTimeChange && newTime) {
-      // Se c'è un timer esistente, mantieni la sua data e cambia solo l'ora
-      // Altrimenti usa la data corrente per entrambi
       let startISO: string;
       
       if (timer?.startTime) {
-        // Timer esistente: mantieni l'ora di inizio esistente
+        // Existing timer: keep existing start time
         startISO = timeStringToISO(startTimeValue, timer.startTime);
       } else {
-        // Nessun timer: imposta l'ora di inizio all'ora corrente (quando si inserisce l'ora di fine)
-        // Usa la data/ora corrente come base per l'ora di inizio
+        // No timer: set start time to current time when entering end time
         const currentTime = dayjs().tz('Europe/Rome').format('HH:mm');
         setStartTimeValue(currentTime);
         startISO = timeStringToISO(currentTime, null);
       }
       
-      // Per l'end time, se esiste un timer usa la sua data, altrimenti usa la data corrente
+      // For end time, use timer date if exists, otherwise current date
       const endBaseDate = timer?.endTime || timer?.startTime;
       const newEndISO = timeStringToISO(newTime, endBaseDate);
       

@@ -100,7 +100,7 @@ export function UserCardContent({
                       variant="outline"
                       onDoubleClick={(e) => e.stopPropagation()}
                       onClick={(e) => {
-                        // Se Shift è premuto, elimina direttamente senza aprire il dialog
+                        // If Shift is pressed, delete directly without opening dialog
                         if (e.shiftKey) {
                           e.preventDefault();
                           e.stopPropagation();

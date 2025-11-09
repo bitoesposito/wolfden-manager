@@ -9,14 +9,14 @@ import {
 } from '@/lib/utils/sound';
 
 /**
- * Hook per gestire lo stato muto/smuto dell'audio
- * Sincronizza lo stato con localStorage e gestisce i permessi del browser
+ * Hook to manage audio mute/unmute state
+ * Synchronizes state with localStorage and handles browser permissions
  */
 export function useAudio() {
   const [muted, setMuted] = useState(true);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Inizializza lo stato al mount
+  // Initialize state on mount
   useEffect(() => {
     initAudioState();
     setMuted(isAudioMuted());
@@ -24,7 +24,7 @@ export function useAudio() {
   }, []);
 
   /**
-   * Muta l'audio
+   * Mutes audio
    */
   const mute = () => {
     muteAudio();
@@ -32,20 +32,20 @@ export function useAudio() {
   };
 
   /**
-   * Smuta l'audio e richiede i permessi al browser se necessario
+   * Unmutes audio and requests browser permissions if needed
    */
   const unmute = async () => {
     const success = await unmuteAudio();
     if (success) {
       setMuted(false);
     }
-    // Se non è riuscito a sbloccare, l'utente dovrà interagire con la pagina
-    // ma comunque impostiamo lo stato come smutato
+    // If unlock failed, user will need to interact with page
+    // but we still set state as unmuted
     setMuted(false);
   };
 
   /**
-   * Toggle muto/smuto
+   * Toggles mute/unmute
    */
   const toggle = () => {
     if (muted) {

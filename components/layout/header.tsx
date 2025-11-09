@@ -22,10 +22,12 @@ export function Header({ editMode, toggleEditMode }: HeaderProps) {
   const { t } = useI18n();
   const { muted, toggle: toggleAudio } = useAudio();
   const [timeString, setTimeString] = useState(getCurrentTimeStringWithSeconds());
+  const [mounted, setMounted] = useState(false);
 
-  // Initialize audio on mount to unlock playback
+  // Initialize audio on mount to unlock playback and set mounted flag
   useEffect(() => {
     initializeAudio();
+    setMounted(true);
   }, []);
 
   // Update time every second
@@ -50,7 +52,7 @@ export function Header({ editMode, toggleEditMode }: HeaderProps) {
       </div>
       <div className="flex items-center gap-1">
         <span className="select-none px-2 text-center text-sm sm:block hidden">
-          {timeString}
+          {mounted ? timeString : '00:00:00'}
         </span>
         <Button
           variant="outline"

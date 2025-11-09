@@ -9,33 +9,86 @@ import { Plus, PencilRuler } from 'lucide-react';
 import { useEditMode } from '@/hooks';
 import { useI18n } from '@/hooks/use-i18n';
 import { useAppStore } from '@/store';
+import { toast } from 'sonner';
 
 export function HomeClient() {
   const { editMode, toggleEditMode } = useEditMode();
-  const { sections, addSection, deleteSection, updateSectionName, getCardsBySection } = useAppStore();
+  const { sections, addSection, deleteSection, updateSectionName, getCardsBySection, addCard } = useAppStore();
   const { t } = useI18n();
 
-  // Wrapper per toggleEditMode che:
-  // - Elimina le sezioni vuote quando si esce dalla modalità modifica
-  // - Aggiunge una sezione automaticamente quando si entra in modalità modifica senza sezioni
+  /**
+   * Wrapper for toggleEditMode that:
+   * - Validates section and card names before exiting edit mode
+   * - Deletes empty sections when exiting edit mode
+   * - Automatically adds a section when entering edit mode with no sections
+   */
   const handleToggleEditMode = () => {
-    // Se stiamo uscendo dalla modalità modifica (editMode è true e sta per diventare false)
     if (editMode) {
-      // Elimina tutte le sezioni senza postazioni
+      // Exiting edit mode: validate names first
+      let emptySections = 0;
+      let emptyCards = 0;
+
+      sections.forEach((section) => {
+        // Check if section name is empty or only whitespace
+        if (!section.name || section.name.trim() === '') {
+          emptySections++;
+        }
+
+        // Check cards in this section
+        const cards = getCardsBySection(section.id);
+        cards.forEach((card) => {
+          if (!card.name || card.name.trim() === '') {
+            emptyCards++;
+          }
+        });
+      });
+
+      // If there are validation errors, show toast and don't exit edit mode
+      if (emptySections > 0 || emptyCards > 0) {
+        let description = '';
+        
+        if (emptySections > 0 && emptyCards > 0) {
+          const sectionWord = emptySections === 1 ? t('validation.sectionSingular') : t('validation.sectionPlural');
+          const cardWord = emptyCards === 1 ? t('validation.cardSingular') : t('validation.cardPlural');
+          const validName = t('validation.noValidNamePlural');
+          description = `${emptySections} ${sectionWord} e ${emptyCards} ${cardWord} ${validName}. ${t('validation.pleaseFixNames')}`;
+        } else if (emptySections > 0) {
+          const sectionWord = emptySections === 1 ? t('validation.sectionSingular') : t('validation.sectionPlural');
+          const validName = emptySections === 1 ? t('validation.noValidName') : t('validation.noValidNamePlural');
+          description = `${emptySections} ${sectionWord} ${validName}. ${t('validation.pleaseFixNames')}`;
+        } else {
+          const cardWord = emptyCards === 1 ? t('validation.cardSingular') : t('validation.cardPlural');
+          const validName = emptyCards === 1 ? t('validation.noValidName') : t('validation.noValidNamePlural');
+          description = `${emptyCards} ${cardWord} ${validName}. ${t('validation.pleaseFixNames')}`;
+        }
+
+        toast.error(t('validation.emptyNames'), {
+          description,
+        });
+        
+        return; // Don't exit edit mode
+      }
+
+      // Handle sections without stations
       sections.forEach((section) => {
         const cards = getCardsBySection(section.id);
         if (cards.length === 0) {
-          deleteSection(section.id);
+          // If section has a valid name, add a default station instead of deleting
+          if (section.name && section.name.trim() !== '') {
+            addCard(section.id);
+          } else {
+            // If section has no name, delete it
+            deleteSection(section.id);
+          }
         }
       });
     } else {
-      // Se stiamo entrando in modalità modifica (editMode è false e sta per diventare true)
-      // e non ci sono sezioni, aggiungi automaticamente una sezione
+      // Entering edit mode: add a section if none exist
       if (sections.length === 0) {
         addSection();
       }
     }
-    // Toggle della modalità modifica
+    
     toggleEditMode();
   };
 
@@ -66,16 +119,21 @@ export function HomeClient() {
           </p>
         </div>
       ) : (
-        sections.map((section) => (
-          <SectionItem
-            key={section.id}
-            editMode={editMode}
-            sectionId={section.id}
-            sectionName={section.name}
-            onSectionNameChange={(name) => updateSectionName(section.id, name)}
-            onDeleteSection={() => deleteSection(section.id)}
-          />
-        ))
+        sections.map((section) => {
+          const cards = getCardsBySection(section.id);
+          return (
+            <SectionItem
+              key={section.id}
+              editMode={editMode}
+              sectionId={section.id}
+              sectionName={section.name}
+              totalSections={sections.length}
+              hasCards={cards.length > 0}
+              onSectionNameChange={(name) => updateSectionName(section.id, name)}
+              onDeleteSection={() => deleteSection(section.id)}
+            />
+          );
+        })
       )}
 
       {editMode && (

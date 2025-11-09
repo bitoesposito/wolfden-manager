@@ -15,12 +15,12 @@ function Progress({
 }) {
   const displayValue = value || 0;
   
-  // Determine colors based on variant
-  // Colore primario (undefined): timer non avviato o barra vuota
-  // Verde (default): timer attivo con > 30 minuti
-  // Giallo (warning): <= 30 minuti
-  // Arancio (orange): <= 20 minuti
-  // Rosso (destructive): <= 10 minuti o scaduto
+  // Determine colors based on variant:
+  // Primary (undefined): timer not started or empty bar
+  // Green (default): active timer with > 30 minutes
+  // Yellow (warning): <= 30 minutes
+  // Orange: <= 20 minutes
+  // Red (destructive): <= 10 minutes or expired
   const getColors = () => {
     switch (variant) {
       case "destructive":
@@ -44,7 +44,7 @@ function Progress({
           indicator: "bg-green-500"
         };
       default:
-        // Colore primario del tema quando variant è undefined (timer non avviato)
+        // Primary theme color when variant is undefined (timer not started)
         return {
           bg: "bg-primary/20",
           indicator: "bg-primary"

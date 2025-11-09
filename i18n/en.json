@@ -35,6 +35,16 @@
     "noSections": "No sections available",
     "noSectionsDescription": "Press the {editButton} button to enable edit mode and create a new section to get started"
   },
+  "validation": {
+    "emptyNames": "Missing names",
+    "sectionSingular": "section",
+    "sectionPlural": "sections",
+    "cardSingular": "station",
+    "cardPlural": "stations",
+    "noValidName": "does not have a valid name",
+    "noValidNamePlural": "do not have valid names",
+    "pleaseFixNames": "Please enter a valid name for all sections and stations before saving"
+  },
   "section": {
     "name": "Section name",
     "delete": "Delete section",
@@ -43,7 +53,9 @@
     "newCard": "New station",
     "noCards": "No stations in this section",
     "noCardsDescription": "Press the {editButton} button to enable edit mode and add a station to get started",
-    "noCardsDescriptionEditMode": "Add a station to get started"
+    "noCardsDescriptionEditMode": "Add a station to get started",
+    "lastSectionStationsDeleted": "Stations deleted",
+    "lastSectionStationsDeletedDescription": "All stations in the last section have been deleted. The section has been kept."
   },
   "card": {
     "delete": "Delete station",

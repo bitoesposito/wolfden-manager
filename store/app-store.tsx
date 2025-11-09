@@ -20,9 +20,9 @@ import {
 } from '@/features/timers';
 import { loadState, saveState, type AppState } from '@/lib/storage/persistence.service';
 
-// Initial state
-const INITIAL_CARDS: UserCard[] = [{ id: 1, name: '1', progressValue: 0 }];
-const INITIAL_SECTIONS: Section[] = [{ id: 1, name: '' }];
+// Initial state - empty by default
+const INITIAL_CARDS: UserCard[] = [];
+const INITIAL_SECTIONS: Section[] = [];
 
 interface AppStoreContextValue {
   // Sections
@@ -58,9 +58,7 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
   // Load from localStorage only after mount to prevent hydration mismatch
   const [sections, setSections] = useState<Section[]>(INITIAL_SECTIONS);
   const [cardsBySection, setCardsBySection] = useState<CardsBySection>(() => {
-    const map = new Map<number, UserCard[]>();
-    map.set(1, INITIAL_CARDS);
-    return map;
+    return new Map<number, UserCard[]>();
   });
 
   // Load state from localStorage after mount (client-side only)

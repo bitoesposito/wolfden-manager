@@ -85,8 +85,7 @@ export function timestampToTimeString(timestamp: string | null): string {
 export function timeStringToISO(timeString: string, baseTimestamp?: string | null): string {
   if (!timeString) return '';
   
-  // Se c'è un timestamp base, mantieni la sua data e cambia solo l'ora
-  // Altrimenti usa la data corrente
+  // Keep date from base timestamp and change only time; otherwise use current date
   const baseDate = baseTimestamp 
     ? dayjs(baseTimestamp).tz(TIMEZONE)
     : dayjs().tz(TIMEZONE);
@@ -95,7 +94,7 @@ export function timeStringToISO(timeString: string, baseTimestamp?: string | nul
   
   if (isNaN(hours) || isNaN(minutes)) return '';
   
-  // Mantieni la data originale e cambia solo l'ora
+  // Keep original date and change only time
   const dateTime = baseDate.hour(hours).minute(minutes).second(0).millisecond(0);
   return dateTime.toISOString();
 }
@@ -157,8 +156,8 @@ export function getRemainingSeconds(endTimestamp: string | null): number {
 /**
  * Calculates progress percentage based on initial duration and remaining seconds
  * Uses seconds to ensure precise updates every second
- * La barra rimane al 100% finché il tempo rimanente è superiore a 1 ora,
- * poi inizia a scendere basandosi sull'ultima ora
+ * The bar stays at 100% while remaining time is greater than 1 hour,
+ * then starts decreasing based on the last hour
  * @param initialMinutes - Initial duration in minutes
  * @param remainingSeconds - Remaining seconds (can be negative if expired)
  * @returns Progress percentage (0-100, or >100 if expired to show red progress bar)
@@ -180,13 +179,13 @@ export function calculateProgress(initialMinutes: number, remainingSeconds: numb
     return Math.min(200, 100 + (overtimeSeconds / ONE_HOUR_IN_SECONDS) * 100);
   }
   
-  // Se il tempo rimanente è superiore a 1 ora, la barra è sempre al 100%
+  // If remaining time is greater than 1 hour, bar is always at 100%
   if (remainingSeconds > ONE_HOUR_IN_SECONDS) {
     return 100;
   }
   
-  // Quando il tempo rimanente è <= 1 ora, calcola il progresso basandosi sull'ultima ora
-  // Il progresso va da 100% (1 ora rimanente) a 0% (0 secondi rimanenti)
+  // When remaining time is <= 1 hour, calculate progress based on last hour
+  // Progress goes from 100% (1 hour remaining) to 0% (0 seconds remaining)
   const progress = (remainingSeconds / ONE_HOUR_IN_SECONDS) * 100;
   return Math.max(0, Math.min(100, progress));
 }

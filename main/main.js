@@ -11,11 +11,11 @@ const appServe = app.isPackaged
 
 const createWindow = () => {
   const win = new BrowserWindow({
-    width: 800,
+    width: 500,
     height: 800,
     minWidth: 360,
     minHeight: 600,
-    autoHideMenuBar: true, // Nasconde la menu bar su Windows
+    autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       nodeIntegration: false,

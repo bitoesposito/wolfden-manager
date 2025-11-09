@@ -18,13 +18,13 @@ export function useTimerCalculations(timer: TimerState | undefined) {
   const previousExpiredRef = useRef(false);
   const hasInitializedRef = useRef(false);
 
-  // Inizializza previousExpiredRef in base allo stato iniziale del timer
-  // Se il timer è già scaduto al mount, non riprodurre il suono
+  // Initialize previousExpiredRef based on initial timer state
+  // If timer is already expired on mount, don't play sound
   useEffect(() => {
     if (!hasInitializedRef.current && timer?.isActive && timer.endTime) {
       const remainingSeconds = getRemainingSeconds(timer.endTime);
       const isExpired = isTimerExpired(remainingSeconds);
-      // Se è già scaduto al mount, segna come già gestito per evitare il suono al reload
+      // Mark as handled if already expired to avoid sound on reload
       previousExpiredRef.current = isExpired;
       hasInitializedRef.current = true;
     } else if (!timer?.isActive) {

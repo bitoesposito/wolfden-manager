@@ -61,22 +61,22 @@ export function UserCardDialogs({
   /**
    * Handles adding time via custom dialog
    * Converts hours and minutes to total minutes
-   * Se il timer non è attivo e il valore è positivo, avvia il timer
-   * Se il timer non è attivo e il valore è negativo, mostra un avviso
+   * If timer is not active and value is positive, starts timer
+   * If timer is not active and value is negative, shows warning
    */
   const handleAddTimeFromDialog = (hours: number, minutes: number) => {
     const totalMinutes = toTotalMinutes(hours, minutes);
     
-    // Se il timer non è attivo
+    // If timer is not active
     if (!isTimerActive) {
-      // Se il valore è positivo, avvia il timer
+      // If value is positive, start timer
       if (totalMinutes > 0) {
         onStartTimer(totalMinutes);
       }
-      // Se il valore è negativo, l'avviso viene già mostrato nel dialog
-      // Non fare nulla qui
+      // If value is negative, warning is already shown in dialog
+      // Do nothing here
     } else {
-      // Se il timer è attivo, aggiungi/sottrai tempo
+      // If timer is active, add/subtract time
       onAddTime(totalMinutes);
     }
   };
