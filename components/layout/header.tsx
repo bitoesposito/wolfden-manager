@@ -45,11 +45,11 @@ export function Header({ editMode, toggleEditMode }: HeaderProps) {
             <h1 className="text-2xl font-bold whitespace-nowrap overflow-hidden text-ellipsis flex items-center gap-2 m-0 p-0 leading-none">
             {t('header.title')} 
           </h1>
-          <span className="text-muted-foreground text-sm font-bold">{t('header.subtitle')}</span>
+          <span className="text-muted-foreground text-sm font-bold whitespace-nowrap overflow-hidden text-ellipsis">{t('header.subtitle')}</span>
           </div>
       </div>
       <div className="flex items-center gap-1">
-        <span className="select-none px-2 text-center text-sm">
+        <span className="select-none px-2 text-center text-sm sm:block hidden">
           {timeString}
         </span>
         <Button
@@ -65,7 +65,7 @@ export function Header({ editMode, toggleEditMode }: HeaderProps) {
           )}
           <span className="sr-only">{t('header.toggleAudio')}</span>
         </Button>
-        <Button
+        {/* <Button
           variant="outline"
           size="icon"
           onClick={() => playTimerExpiredSound()}
@@ -73,7 +73,7 @@ export function Header({ editMode, toggleEditMode }: HeaderProps) {
         >
           <Play className="h-[1.2rem] w-[1.2rem]" />
           <span className="sr-only">Test audio</span>
-        </Button>
+        </Button> */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="icon">
@@ -93,6 +93,7 @@ export function Header({ editMode, toggleEditMode }: HeaderProps) {
           onClick={toggleEditMode}
         >
           {editMode ? <Check /> : <PencilRuler />}
+          <span className="sm:block hidden">{editMode ? t('header.saveChanges') : t('header.toggleEditMode')}</span>
         </Button>
       </div>
     </header>

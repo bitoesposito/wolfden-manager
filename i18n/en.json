@@ -22,6 +22,8 @@
     "toggleAudio": "Toggle audio",
     "audioMuted": "Audio muted",
     "audioUnmuted": "Audio unmuted",
+    "toggleEditMode": "Edit mode",
+    "saveChanges": "Save changes",
     "theme": {
       "light": "Light",
       "dark": "Dark",
@@ -29,17 +31,24 @@
     }
   },
   "home": {
-    "newSection": "New section"
+    "newSection": "New section",
+    "noSections": "No sections available",
+    "noSectionsDescription": "Press the {editButton} button to enable edit mode and create a new section to get started"
   },
   "section": {
     "name": "Section name",
     "delete": "Delete section",
     "deleteConfirm": "Are you sure you want to delete this section? This action cannot be undone.",
-    "newCard": "New station"
+    "deleteTooltip": "{shift} + Click to delete without confirmation",
+    "newCard": "New station",
+    "noCards": "No stations in this section",
+    "noCardsDescription": "Press the {editButton} button to enable edit mode and add a station to get started",
+    "noCardsDescriptionEditMode": "Add a station to get started"
   },
   "card": {
     "delete": "Delete station",
     "deleteConfirm": "Are you sure you want to delete the station \"{name}\"? This action cannot be undone.",
+    "deleteTooltip": "{shift} + Click to delete without confirmation",
     "quickAdd": "Add 1 hour",
     "quickStart": "Start timer (1 hour)",
     "resetTimer": "Reset timer",

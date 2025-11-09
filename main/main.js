@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, Menu } = require("electron");
 const serve = require("electron-serve").default || require("electron-serve");
 const path = require("path");
 
@@ -15,12 +15,16 @@ const createWindow = () => {
     height: 800,
     minWidth: 360,
     minHeight: 600,
+    autoHideMenuBar: true, // Nasconde la menu bar su Windows
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       nodeIntegration: false,
       contextIsolation: true,
     },
   });
+
+  // Rimuove completamente il menu (File, Modifica, ecc.)
+  Menu.setApplicationMenu(null);
 
   if (app.isPackaged) {
     appServe(win).then(() => {

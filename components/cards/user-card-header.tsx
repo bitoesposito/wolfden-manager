@@ -76,7 +76,11 @@ export function UserCardHeader({
             type="time"
             value={startTimeValue}
             onChange={handleStartTimeChange}
-            className="text-sm px-1 m-0 h-fit text-muted-foreground w-fit text-center border-transparent bg-transparent hover:bg-accent/50 focus:bg-accent/50 focus:border-input"
+            className="text-sm px-1 m-0 h-fit text-muted-foreground w-fit text-center border-transparent bg-transparent hover:bg-accent/50 focus:bg-accent/50 focus:border-input [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+            style={{ 
+              WebkitAppearance: 'none',
+              MozAppearance: 'textfield'
+            } as React.CSSProperties}
           />
         ) : (
           <span className="text-sm text-muted-foreground mr-2">{startTime}</span>
@@ -87,7 +91,11 @@ export function UserCardHeader({
             type="time"
             value={endTimeValue}
             onChange={handleEndTimeChange}
-            className="text-sm px-1 m-0 h-fit text-muted-foreground w-fit text-center border-transparent bg-transparent hover:bg-accent/50 focus:bg-accent/50 focus:border-input"
+            className="text-sm px-1 m-0 h-fit text-muted-foreground w-fit text-center border-transparent bg-transparent hover:bg-accent/50 focus:bg-accent/50 focus:border-input [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
+            style={{ 
+              WebkitAppearance: 'none',
+              MozAppearance: 'textfield'
+            } as React.CSSProperties}
           />
         ) : (
           <span className="text-sm text-muted-foreground">{endTime}</span>

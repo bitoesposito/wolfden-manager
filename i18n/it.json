@@ -22,6 +22,8 @@
     "toggleAudio": "Attiva/disattiva audio",
     "audioMuted": "Audio disattivato",
     "audioUnmuted": "Audio attivato",
+    "toggleEditMode": "Modalità modifica",
+    "saveChanges": "Salva modifiche",
     "theme": {
       "light": "Chiaro",
       "dark": "Scuro",
@@ -29,17 +31,24 @@
     }
   },
   "home": {
-    "newSection": "Nuova sezione"
+    "newSection": "Nuova sezione",
+    "noSections": "Nessuna sezione disponibile",
+    "noSectionsDescription": "Premi il pulsante {editButton} e crea una nuova sezione per iniziare"
   },
   "section": {
     "name": "Nome sezione",
     "delete": "Elimina sezione",
     "deleteConfirm": "Sei sicuro di voler eliminare questa sezione? Questa azione non può essere annullata.",
-    "newCard": "Nuova postazione"
+    "deleteTooltip": "{shift} + Click per eliminare senza conferma",
+    "newCard": "Nuova postazione",
+    "noCards": "Nessuna postazione in questa sezione",
+    "noCardsDescription": "Premi il pulsante {editButton} e aggiungi una postazione per iniziare",
+    "noCardsDescriptionEditMode": "Aggiungi una postazione per iniziare"
   },
   "card": {
     "delete": "Elimina postazione",
     "deleteConfirm": "Sei sicuro di voler eliminare la postazione \"{name}\"? Questa azione non può essere annullata.",
+    "deleteTooltip": "{shift} + Click per eliminare senza conferma",
     "quickAdd": "Aggiungi 1 ora",
     "quickStart": "Avvia timer (1 ora)",
     "resetTimer": "Resetta timer",

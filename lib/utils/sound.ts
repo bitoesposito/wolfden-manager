@@ -6,8 +6,6 @@
 let audioInstance: HTMLAudioElement | null = null;
 let isMuted = false;
 let audioUnlocked = false;
-let audioQueue = 0;
-let isPlaying = false;
 
 const MUTE_STORAGE_KEY = 'wolfden-audio-muted';
 
@@ -76,58 +74,8 @@ function unlockAudio(): Promise<boolean> {
 }
 
 /**
- * Sets up handler for audio end event
- * When audio ends, plays next in queue if available
- */
-function setupAudioEndedHandler(audio: HTMLAudioElement): void {
-  audio.onended = () => {
-    isPlaying = false;
-    if (audioQueue > 0) {
-      playNextInQueue();
-    }
-  };
-}
-
-/**
- * Plays next audio in queue
- * Called when audio ends or when queue is ready to play
- */
-function playNextInQueue(): void {
-  if (audioQueue === 0) {
-    return;
-  }
-
-  const audio = getAudioInstance();
-  
-  if (isPlaying || !audio.paused) {
-    return;
-  }
-
-  isPlaying = true;
-  audioQueue--;
-
-  audio.currentTime = 0;
-  const playPromise = audio.play();
-  
-  setupAudioEndedHandler(audio);
-  
-  if (playPromise !== undefined) {
-    playPromise
-      .catch((error) => {
-        isPlaying = false;
-        if (error.name !== 'NotAllowedError') {
-          console.error('Error playing sound:', error);
-        }
-        if (audioQueue > 0) {
-          playNextInQueue();
-        }
-      });
-  }
-}
-
-/**
  * Plays timer expired sound
- * Manages playback queue: if audio is already playing, adds to queue instead of overlapping
+ * Resets audio to start and plays it
  * Does not play if audio is muted
  */
 export function playTimerExpiredSound(): void {
@@ -137,10 +85,16 @@ export function playTimerExpiredSound(): void {
   
   const audio = getAudioInstance();
   
-  audioQueue++;
+  // Reset audio to start and play
+  audio.currentTime = 0;
+  const playPromise = audio.play();
   
-  if (!isPlaying && audio.paused) {
-    playNextInQueue();
+  if (playPromise !== undefined) {
+    playPromise.catch((error) => {
+      if (error.name !== 'NotAllowedError') {
+        console.error('Error playing sound:', error);
+      }
+    });
   }
 }
 

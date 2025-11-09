@@ -17,6 +17,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Kbd } from '@/components/ui/kbd';
 import { ClockPlus, ClockFading, X } from 'lucide-react';
 import { useI18n } from '@/hooks/use-i18n';
 
@@ -89,33 +91,63 @@ export function UserCardContent({
         </Button>
 
         {editMode && (
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button 
-                variant="outline"
-                onDoubleClick={(e) => e.stopPropagation()}
-              >
-                <X />
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>{t('card.delete')}</AlertDialogTitle>
-                <AlertDialogDescription>
-                  {t('card.deleteConfirm', { name: cardName })}
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={onDeleteCard}
-                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                >
-                  {t('common.delete')}
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+          <TooltipProvider>
+            <AlertDialog>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <AlertDialogTrigger asChild>
+                    <Button 
+                      variant="outline"
+                      onDoubleClick={(e) => e.stopPropagation()}
+                      onClick={(e) => {
+                        // Se Shift è premuto, elimina direttamente senza aprire il dialog
+                        if (e.shiftKey) {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          onDeleteCard();
+                        }
+                      }}
+                    >
+                      <X />
+                    </Button>
+                  </AlertDialogTrigger>
+                </TooltipTrigger>
+                <TooltipContent>
+                  {(() => {
+                    const text = t('card.deleteTooltip');
+                    const parts = text.split('{shift}');
+                    return parts.map((part, index) => (
+                      <span key={index}>
+                        {part}
+                        {index < parts.length - 1 && (
+                          <Kbd className="inline-flex items-center gap-1 mx-0.5">
+                            Shift
+                          </Kbd>
+                        )}
+                      </span>
+                    ));
+                  })()}
+                </TooltipContent>
+              </Tooltip>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>{t('card.delete')}</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {t('card.deleteConfirm', { name: cardName })}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={onDeleteCard}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    {t('common.delete')}
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </TooltipProvider>
         )}
       </div>
     </CardContent>
