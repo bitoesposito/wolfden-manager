@@ -53,11 +53,6 @@ export function UserCardContent({
   return (
     <CardContent className="px-0 flex gap-2 items-center">
       <div className="flex flex-col gap-1 w-full relative">
-        {/* 
-          When expired, always show 100% with red color
-          The progressValue will be > 100 when expired, but we limit to 100 for display
-          Color changes: red if <= 5 min, orange if <= 10 min, default otherwise
-        */}
         <Progress
           value={isExpired ? 100 : Math.min(100, progressValue)}
           variant={progressVariant}
@@ -72,21 +67,21 @@ export function UserCardContent({
       </div>
 
       <div className="flex items-center gap-1">
-        {/* Quick button to add/start 1 hour */}
         <Button
           variant="outline"
           size="icon"
           onClick={onQuickAdd}
+          onDoubleClick={(e) => e.stopPropagation()}
           title={isTimerActive ? t('card.addHour') : t('card.startTimer')}
         >
           <ClockPlus className="h-4 w-4" />
         </Button>
 
-        {/* Button to reset the timer */}
         <Button
           variant="outline"
           size="icon"
           onClick={onClearTimer}
+          onDoubleClick={(e) => e.stopPropagation()}
           disabled={!isTimerActive}
           title={t('card.resetTimer')}
         >
@@ -96,7 +91,10 @@ export function UserCardContent({
         {editMode && (
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="outline">
+              <Button 
+                variant="outline"
+                onDoubleClick={(e) => e.stopPropagation()}
+              >
                 <X />
               </Button>
             </AlertDialogTrigger>

@@ -6,13 +6,14 @@
 let audioInstance: HTMLAudioElement | null = null;
 let isMuted = false;
 let audioUnlocked = false;
+let audioQueue = 0;
+let isPlaying = false;
 
-// Chiave per localStorage
 const MUTE_STORAGE_KEY = 'wolfden-audio-muted';
 
 /**
- * Carica lo stato muto da localStorage
- * Se il browser blocca l'audio di default, parte da muto
+ * Loads mute state from localStorage
+ * Defaults to muted if browser blocks audio
  */
 function loadMuteState(): boolean {
   if (typeof window === 'undefined') return true;
@@ -22,22 +23,14 @@ function loadMuteState(): boolean {
     return saved === 'true';
   }
   
-  // Se non c'è uno stato salvato, parte da muto per sicurezza
-  // (il browser potrebbe bloccare l'audio)
   return true;
 }
 
-/**
- * Salva lo stato muto in localStorage
- */
 function saveMuteState(muted: boolean): void {
   if (typeof window === 'undefined') return;
   localStorage.setItem(MUTE_STORAGE_KEY, String(muted));
 }
 
-/**
- * Inizializza lo stato muto
- */
 function initMuteState(): void {
   isMuted = loadMuteState();
 }
@@ -58,7 +51,7 @@ function getAudioInstance(): HTMLAudioElement {
 /**
  * Unlocks audio context by attempting to play and pause
  * Required for browsers that block autoplay
- * Ritorna true se l'audio è stato sbloccato con successo
+ * Returns true if audio was successfully unlocked
  */
 function unlockAudio(): Promise<boolean> {
   return new Promise((resolve) => {
@@ -68,14 +61,12 @@ function unlockAudio(): Promise<boolean> {
     if (playPromise !== undefined) {
       playPromise
         .then(() => {
-          // Audio unlocked, pause immediately
           audio.pause();
           audio.currentTime = 0;
           audioUnlocked = true;
           resolve(true);
         })
         .catch(() => {
-          // Ignore errors during unlock attempt
           resolve(false);
         });
     } else {
@@ -85,9 +76,59 @@ function unlockAudio(): Promise<boolean> {
 }
 
 /**
+ * Sets up handler for audio end event
+ * When audio ends, plays next in queue if available
+ */
+function setupAudioEndedHandler(audio: HTMLAudioElement): void {
+  audio.onended = () => {
+    isPlaying = false;
+    if (audioQueue > 0) {
+      playNextInQueue();
+    }
+  };
+}
+
+/**
+ * Plays next audio in queue
+ * Called when audio ends or when queue is ready to play
+ */
+function playNextInQueue(): void {
+  if (audioQueue === 0) {
+    return;
+  }
+
+  const audio = getAudioInstance();
+  
+  if (isPlaying || !audio.paused) {
+    return;
+  }
+
+  isPlaying = true;
+  audioQueue--;
+
+  audio.currentTime = 0;
+  const playPromise = audio.play();
+  
+  setupAudioEndedHandler(audio);
+  
+  if (playPromise !== undefined) {
+    playPromise
+      .catch((error) => {
+        isPlaying = false;
+        if (error.name !== 'NotAllowedError') {
+          console.error('Error playing sound:', error);
+        }
+        if (audioQueue > 0) {
+          playNextInQueue();
+        }
+      });
+  }
+}
+
+/**
  * Plays timer expired sound
- * Handles autoplay restrictions gracefully
- * Non riproduce se l'audio è muto
+ * Manages playback queue: if audio is already playing, adds to queue instead of overlapping
+ * Does not play if audio is muted
  */
 export function playTimerExpiredSound(): void {
   if (isMuted) {
@@ -96,40 +137,25 @@ export function playTimerExpiredSound(): void {
   
   const audio = getAudioInstance();
   
-  const playSound = () => {
-    audio.currentTime = 0;
-    const playPromise = audio.play();
-    
-    if (playPromise !== undefined) {
-      playPromise.catch((error) => {
-        // Silently handle autoplay restrictions
-        // This is expected behavior in browsers that require user interaction
-        if (error.name !== 'NotAllowedError') {
-          console.error('Error playing sound:', error);
-        }
-      });
-    }
-  };
-
-  playSound();
+  audioQueue++;
+  
+  if (!isPlaying && audio.paused) {
+    playNextInQueue();
+  }
 }
 
-/**
- * Muta l'audio
- */
 export function muteAudio(): void {
   isMuted = true;
   saveMuteState(true);
 }
 
 /**
- * Smuta l'audio e richiede i permessi al browser se necessario
+ * Unmutes audio and requests browser permissions if needed
  */
 export async function unmuteAudio(): Promise<boolean> {
   isMuted = false;
   saveMuteState(false);
   
-  // Se l'audio non è ancora sbloccato, prova a sbloccarlo
   if (!audioUnlocked) {
     const unlocked = await unlockAudio();
     return unlocked;
@@ -138,16 +164,10 @@ export async function unmuteAudio(): Promise<boolean> {
   return true;
 }
 
-/**
- * Verifica se l'audio è muto
- */
 export function isAudioMuted(): boolean {
   return isMuted;
 }
 
-/**
- * Inizializza lo stato audio all'avvio
- */
 export function initAudioState(): void {
   initMuteState();
 }
@@ -155,14 +175,11 @@ export function initAudioState(): void {
 /**
  * Unlocks audio on first user interaction
  * Call this once when the app loads to enable audio playback
- * Non viene chiamato automaticamente se l'audio è muto
+ * Not called automatically if audio is muted
  */
 export function initializeAudio(): void {
-  // Inizializza lo stato muto
   initAudioState();
   
-  // Se l'audio non è muto, prova a sbloccarlo al primo click
-  // Altrimenti aspetta che l'utente smuti manualmente
   if (!isMuted) {
     const unlock = () => {
       unlockAudio();
