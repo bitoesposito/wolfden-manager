@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
-import { PWAProvider } from "@/components/providers/pwa-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { AppStoreProvider } from "@/store";
 import { HtmlLang } from "@/components/layout/html-lang";
@@ -20,17 +19,11 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "WolfDen Manager",
-  description: "Dashboard per la gestione del WolfDen",
-  manifest: "/site.webmanifest",
+  description: "Desktop application per la gestione del WolfDen",
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#ffffff" },
     { media: "(prefers-color-scheme: dark)", color: "#252525" },
   ],
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "default",
-    title: "WolfDen Manager",
-  },
   icons: {
     icon: [
       { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
@@ -67,7 +60,6 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased m-4`}
       >
         <HtmlLang />
-        <PWAProvider />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

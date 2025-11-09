@@ -1,9 +1,11 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Note: i18n configuration is not supported in App Router.
-  // We handle internationalization client-side via hooks and components.
-  // See: hooks/use-i18n.ts for implementation.
+  // Static export for Electron - files generated in 'out' directory
+  output: "export",
+  images: {
+    unoptimized: true,
+  },
 };
 
 export default nextConfig;

@@ -1,0 +1,35 @@
+appId: "com.wolfden.manager"
+productName: "WolfDen Manager"
+copyright: "Sviluppata da Vito Esposito - https://linkedin.com/in/vitoespo"
+
+win:
+  target: ["dir", "portable", "zip"]
+  icon: "public/icon.ico"
+
+linux:
+  target: ["dir", "appimage", "zip"]
+  icon: "public/icon.png"
+  category: "Utility"
+
+mac:
+  target: ["dir", "dmg", "zip"]
+  icon: "public/icon.icns"
+  category: "public.app-category.utilities"
+
+files:
+  - "out/**/*"
+  - "main/**/*"
+  - "package.json"
+  - "node_modules/**/*"
+  - "!node_modules/**/*.{md,ts,map}"
+  - "!.next"
+  - "!src"
+  - "!app"
+  - "!components"
+  - "!hooks"
+  - "!features"
+  - "!store"
+  - "!types"
+  - "!i18n"
+  - "!lib"
+
