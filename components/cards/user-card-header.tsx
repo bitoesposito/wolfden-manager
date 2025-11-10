@@ -64,7 +64,7 @@ export function UserCardHeader({
           placeholder={t('card.namePlaceholder')}
         />
       ) : (
-        <CardTitle className="text-ellipsis overflow-hidden w-full whitespace-nowrap">
+        <CardTitle className="text-ellipsis overflow-hidden w-full whitespace-nowrap select-none">
           {name}
         </CardTitle>
       )}
@@ -92,4 +92,3 @@ export function UserCardHeader({
     </CardHeader>
   );
 }
-

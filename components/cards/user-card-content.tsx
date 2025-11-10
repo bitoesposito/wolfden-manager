@@ -18,6 +18,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Kbd, KbdGroup } from '@/components/ui/kbd';
 import { ClockPlus, ClockFading, X } from 'lucide-react';
 import { useI18n } from '@/hooks/use-i18n';
 import { parseShiftTooltip } from '@/lib/utils/text-parser';
@@ -55,40 +56,114 @@ export function UserCardContent({
   return (
     <CardContent className="px-0 flex gap-2 items-center">
       <div className="flex flex-col gap-1 w-full relative">
-        <Progress
-          value={isExpired ? 100 : Math.min(100, progressValue)}
-          variant={progressVariant}
-          className="h-10"
-          style={{ borderRadius: '0.5rem' }}
-        />
-        {isTimerActive && (
-          <span className={`absolute font-semibold m-2 px-2 bg-card rounded-sm ${isExpired ? 'text-destructive' : 'text-color'}`}>
+        {isTimerActive ? (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div>
+                  <Progress
+                    value={isExpired ? 100 : Math.min(100, progressValue)}
+                    variant={progressVariant}
+                    className="h-10"
+                    style={{ borderRadius: '0.5rem' }}
+                  />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-2">
+                    <KbdGroup>
+                      <Kbd>Ctrl</Kbd>
+                      <span>+</span>
+                      <span>{t('card.scrollAdjustTime.scroll')}</span>
+                    </KbdGroup>
+                    <span>= ±1 {t('common.minute')}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <KbdGroup>
+                      <Kbd>Ctrl</Kbd>
+                      <Kbd>Shift</Kbd>
+                      <span>+</span>
+                      <span>{t('card.scrollAdjustTime.scroll')}</span>
+                    </KbdGroup>
+                    <span>= ±5 {t('common.minutes')}</span>
+                  </div>
+                </div>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        ) : (
+          <Progress
+            value={isExpired ? 100 : Math.min(100, progressValue)}
+            variant={progressVariant}
+            className="h-10"
+            style={{ borderRadius: '0.5rem' }}
+          />
+        )}
+        {isTimerActive ? (
+          <span className={`absolute select-none font-semibold m-2 px-2 bg-card rounded-sm ${isExpired ? 'text-destructive' : 'text-color'}`}>
             {remainingTime} {isExpired ? t('common.expired') : ''}
+          </span>
+        ) : (
+          <span className="absolute select-none text-sm m-2 my-2.5 rounded-sm text-muted-foreground">
+            {t('card.timerAvailable')}
           </span>
         )}
       </div>
 
       <div className="flex items-center gap-1">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={onQuickAdd}
-          onDoubleClick={(e) => e.stopPropagation()}
-          title={isTimerActive ? t('card.addHour') : t('card.startTimer')}
-        >
-          <ClockPlus className="h-4 w-4" />
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                className="cursor-pointer"
+                variant="outline"
+                size="icon"
+                onClick={onQuickAdd}
+                onDoubleClick={(e) => e.stopPropagation()}
+              >
+                <ClockPlus className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <div className="flex items-center gap-2">
+                <span>{isTimerActive ? t('card.addHour') : t('card.startTimer')}</span>
+                <KbdGroup>
+                  <Kbd>Ctrl</Kbd>
+                  <Kbd>1</Kbd>
+                </KbdGroup>
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
 
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={onClearTimer}
-          onDoubleClick={(e) => e.stopPropagation()}
-          disabled={!isTimerActive}
-          title={t('card.resetTimer')}
-        >
-          <ClockFading className="h-4 w-4" />
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                className="cursor-pointer"
+                variant="outline"
+                size="icon"
+                onClick={onClearTimer}
+                onDoubleClick={(e) => e.stopPropagation()}
+                disabled={!isTimerActive}
+              >
+                <ClockFading className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <div className="flex items-center gap-2">
+                <span>{t('card.resetTimer')}</span>
+                {isTimerActive && (
+                  <KbdGroup>
+                    <Kbd>Ctrl</Kbd>
+                    <Kbd>R</Kbd>
+                  </KbdGroup>
+                )}
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
 
         {editMode && (
           <TooltipProvider>

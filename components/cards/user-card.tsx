@@ -101,13 +101,16 @@ export function UserCard({
     onStartTimer: handleStartTimer,
     onAddTime: handleAddTime,
     onOpenCustomDialog: () => setAddTimeDialogOpen(true),
+    onSwapCard: canSwapCard ? () => setSwapCardDialogOpen(true) : undefined,
+    onClearTimer: clearTimer,
+    canSwapCard,
   });
 
   return (
     <ContextMenu>
       <ContextMenuTrigger asChild>
         <Card
-          className="p-3 gap-1 cursor-pointer"
+          className="p-3 gap-1"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
           onDoubleClick={handleDoubleClick}
@@ -144,7 +147,7 @@ export function UserCard({
         onOpenDetailsDialog={() => setDetailsDialogOpen(true)}
         onClearTimer={clearTimer}
         onDeleteCard={deleteCard}
-        onSwapCard={canSwapCard ? () => setSwapCardDialogOpen(true) : undefined}
+        onSwapCard={() => setSwapCardDialogOpen(true)}
         canSwapCard={canSwapCard}
       />
 

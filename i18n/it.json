@@ -66,11 +66,15 @@
     "resetTimer": "Resetta timer",
     "addHour": "Aggiungi 1 ora",
     "startTimer": "Avvia timer (1 ora)",
-    "namePlaceholder": "Nome postazione"
+    "namePlaceholder": "Nome postazione",
+    "timerAvailable": "Disponibile",
+    "scrollAdjustTime": {
+      "scroll": "Scroll"
+    }
   },
   "contextMenu": {
     "startTimer": {
-      "oneHour": "Avvia timer (1 ora)",
+      "oneHour": "Avvia (1 ora)",
       "quickStart": "Avvio rapido",
       "durations": {
         "30min": "30 minuti",
@@ -81,12 +85,17 @@
     },
     "timerActive": {
       "addOneHour": "Aggiungi 1 ora",
+      "removeOneHour": "Rimuovi 1 ora",
       "addTime": "Aggiungi tempo",
       "removeTime": "Rimuovi tempo",
       "customTime": "Tempo personalizzato...",
       "details": "Dettagli timer",
       "reset": "Resetta timer",
+      "swapCard": "Scambia postazione",
       "durations": {
+        "5min": "5 minuti",
+        "10min": "10 minuti",
+        "15min": "15 minuti",
         "30min": "30 minuti",
         "1hour": "1 ora",
         "2hours": "2 ore"
@@ -160,32 +169,6 @@
     "noResults": "Nessun risultato trovato",
     "noCardsAvailable": "Nessuna altra postazione disponibile",
     "timerActive": "Timer attivo"
-  },
-  "contextMenu": {
-    "startTimer": {
-      "oneHour": "Avvia timer (1 ora)",
-      "quickStart": "Avvio rapido",
-      "durations": {
-        "30min": "30 minuti",
-        "1hour": "1 ora",
-        "2hours": "2 ore"
-      },
-      "custom": "Durata personalizzata..."
-    },
-    "timerActive": {
-      "addOneHour": "Aggiungi 1 ora",
-      "addTime": "Aggiungi tempo",
-      "removeTime": "Rimuovi tempo",
-      "customTime": "Tempo personalizzato...",
-      "details": "Dettagli timer",
-      "reset": "Resetta timer",
-      "swapCard": "Scambia postazione",
-      "durations": {
-        "30min": "30 minuti",
-        "1hour": "1 ora",
-        "2hours": "2 ore"
-      }
-    }
   }
 }
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -8,11 +8,20 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { Kbd, KbdGroup } from '@/components/ui/kbd';
 import { PencilRuler, Moon, Sun, Check, Volume2, VolumeX, Play } from 'lucide-react';
 import { useTheme } from 'next-themes';
 import { getCurrentTimeStringWithSeconds } from '@/lib/utils/time';
 import { useI18n } from '@/hooks/use-i18n';
 import { useAudio } from '@/hooks/use-audio';
+import { useGlobalShortcuts } from '@/hooks/use-global-shortcuts';
+import { toast } from 'sonner';
 import type { HeaderProps } from '@/types';
 import { Logo } from './logo';
 import { initializeAudio, playTimerExpiredSound } from '@/lib/utils/sound';
@@ -39,6 +48,22 @@ export function Header({ editMode, toggleEditMode }: HeaderProps) {
     return () => clearInterval(interval);
   }, []);
 
+  /**
+   * Wrapper for toggleAudio that shows toast notification
+   * Shows toast with the new state (inverted from current muted state)
+   */
+  const handleToggleAudio = useCallback(() => {
+    // Show toast with the new state (inverted from current)
+    const newMutedState = !muted;
+    toast.info(newMutedState ? t('header.audioMuted') : t('header.audioUnmuted'));
+    toggleAudio();
+  }, [muted, toggleAudio, t]);
+
+  // Register global keyboard shortcuts
+  useGlobalShortcuts({
+    onToggleAudio: handleToggleAudio,
+  });
+
   return (
     <header className="flex items-center justify-between">
       <div className="flex gap-2 items-center select-none">
@@ -54,28 +79,33 @@ export function Header({ editMode, toggleEditMode }: HeaderProps) {
         <span className="select-none px-2 text-center text-sm sm:block hidden">
           {mounted ? timeString : '00:00:00'}
         </span>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={toggleAudio}
-          title={muted ? t('header.audioMuted') : t('header.audioUnmuted')}
-        >
-          {muted ? (
-            <VolumeX className="h-[1.2rem] w-[1.2rem]" />
-          ) : (
-            <Volume2 className="h-[1.2rem] w-[1.2rem]" />
-          )}
-          <span className="sr-only">{t('header.toggleAudio')}</span>
-        </Button>
-        {/* <Button
-          variant="outline"
-          size="icon"
-          onClick={() => playTimerExpiredSound()}
-          title="Test audio (debug)"
-        >
-          <Play className="h-[1.2rem] w-[1.2rem]" />
-          <span className="sr-only">Test audio</span>
-        </Button> */}
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleToggleAudio}
+              >
+                {muted ? (
+                  <VolumeX className="h-[1.2rem] w-[1.2rem]" />
+                ) : (
+                  <Volume2 className="h-[1.2rem] w-[1.2rem]" />
+                )}
+                <span className="sr-only">{t('header.toggleAudio')}</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <div className="flex items-center gap-2">
+                <span>{muted ? t('header.audioMuted') : t('header.audioUnmuted')}</span>
+                <KbdGroup>
+                  <Kbd>Ctrl</Kbd>
+                  <Kbd>M</Kbd>
+                </KbdGroup>
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="icon">
@@ -90,13 +120,29 @@ export function Header({ editMode, toggleEditMode }: HeaderProps) {
             <DropdownMenuItem onClick={() => setTheme('system')}>{t('header.theme.system')}</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <Button 
-          variant={editMode ? "success" : "outline"} 
-          onClick={toggleEditMode}
-        >
-          {editMode ? <Check /> : <PencilRuler />}
-          <span className="sm:block hidden">{editMode ? t('header.saveChanges') : t('header.toggleEditMode')}</span>
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button 
+                variant={editMode ? "success" : "outline"} 
+                onClick={toggleEditMode}
+                className="cursor-pointer"
+              >
+                {editMode ? <Check /> : <PencilRuler />}
+                <span className="sm:block hidden">{editMode ? t('header.saveChanges') : t('header.toggleEditMode')}</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <div className="flex items-center gap-2">
+                <span>{editMode ? t('header.saveChanges') : t('header.toggleEditMode')}</span>
+                <KbdGroup>
+                  <Kbd>Ctrl</Kbd>
+                  <Kbd>E</Kbd>
+                </KbdGroup>
+              </div>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
     </header>
   );

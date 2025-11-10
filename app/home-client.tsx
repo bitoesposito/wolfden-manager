@@ -1,11 +1,12 @@
 "use client"
 
+import { useCallback } from 'react';
 import { Header } from '@/components/layout/header';
 import { SectionItem } from '@/components/sections/section-item';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Plus } from 'lucide-react';
-import { useEditMode } from '@/hooks';
+import { useEditMode, useGlobalShortcuts } from '@/hooks';
 import { useI18n } from '@/hooks/use-i18n';
 import { useAppStore } from '@/store';
 import { toast } from 'sonner';
@@ -22,7 +23,7 @@ export function HomeClient() {
    * - Deletes empty sections when exiting edit mode
    * - Automatically adds a section when entering edit mode with no sections
    */
-  const handleToggleEditMode = () => {
+  const handleToggleEditMode = useCallback(() => {
     if (editMode) {
       // Exiting edit mode: validate names first
       let emptySections = 0;
@@ -90,7 +91,12 @@ export function HomeClient() {
     }
     
     toggleEditMode();
-  };
+  }, [editMode, sections, getCardsBySection, addSection, deleteSection, toggleEditMode, t, addCard]);
+
+  // Register global keyboard shortcuts
+  useGlobalShortcuts({
+    onToggleEditMode: handleToggleEditMode,
+  });
 
   return (
     <main className="flex flex-col gap-3">
