@@ -39,6 +39,10 @@ interface AppStoreContextValue {
   updateTimerDates: (sectionId: number, cardId: number, startTime: string, endTime: string) => void;
   addTimeToTimer: (sectionId: number, cardId: number, minutes: number) => void;
   clearTimer: (sectionId: number, cardId: number) => void;
+  swapCardTimers: (sectionId1: number, cardId1: number, sectionId2: number, cardId2: number) => void;
+  
+  // Utilities
+  getAllCards: () => Array<{ sectionId: number; sectionName: string; card: UserCard }>;
 }
 
 const AppStoreContext = createContext<AppStoreContextValue | undefined>(undefined);
@@ -302,6 +306,87 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
     );
   }, [updateCardInSection]);
 
+  /**
+   * Swaps timers between two cards
+   * Updates progressValue after swap
+   */
+  const handleSwapCardTimers = useCallback(
+    (sectionId1: number, cardId1: number, sectionId2: number, cardId2: number) => {
+      setCardsBySection((prev) => {
+        const updated = new Map(prev);
+        
+        const originalCards1 = [...(updated.get(sectionId1) || [])];
+        const originalCards2 = [...(updated.get(sectionId2) || [])];
+
+        const card1Index = originalCards1.findIndex((c) => c.id === cardId1);
+        const card2Index = originalCards2.findIndex((c) => c.id === cardId2);
+
+        if (card1Index === -1 || card2Index === -1) return prev;
+
+        const card1 = originalCards1[card1Index];
+        const card2 = originalCards2[card2Index];
+
+        const timer1 = card1.timer ? { ...card1.timer } : undefined;
+        const timer2 = card2.timer ? { ...card2.timer } : undefined;
+
+        const progress1 = timer2 ? calculateTimerProgress(timer2) : 0;
+        const progress2 = timer1 ? calculateTimerProgress(timer1) : 0;
+
+        if (sectionId1 === sectionId2) {
+          const newCards = originalCards1.map((card, index) => {
+            if (index === card1Index) {
+              return { ...card, timer: timer2, progressValue: progress1 };
+            }
+            if (index === card2Index) {
+              return { ...card, timer: timer1, progressValue: progress2 };
+            }
+            return card;
+          });
+          updated.set(sectionId1, newCards);
+        } else {
+          const newCards1 = originalCards1.map((card, index) =>
+            index === card1Index
+              ? { ...card, timer: timer2, progressValue: progress1 }
+              : card
+          );
+
+          const newCards2 = originalCards2.map((card, index) =>
+            index === card2Index
+              ? { ...card, timer: timer1, progressValue: progress2 }
+              : card
+          );
+
+          updated.set(sectionId1, newCards1);
+          updated.set(sectionId2, newCards2);
+        }
+
+        return updated;
+      });
+    },
+    []
+  );
+
+  /**
+   * Returns all cards with their sections
+   * Useful for search and selection
+   */
+  const getAllCards = useCallback(() => {
+    const result: Array<{ sectionId: number; sectionName: string; card: UserCard }> = [];
+    
+    sections.forEach((section) => {
+      const cards = cardsBySection.get(section.id) || [];
+      cards.forEach((card) => {
+        result.push({
+          sectionId: section.id,
+          sectionName: section.name,
+          card,
+        });
+      });
+    });
+
+    return result;
+  }, [sections, cardsBySection]);
+
   const value: AppStoreContextValue = {
     // Sections
     sections,
@@ -321,6 +406,10 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
     updateTimerDates: handleUpdateTimerDates,
     addTimeToTimer: handleAddTimeToTimer,
     clearTimer: handleClearTimer,
+    swapCardTimers: handleSwapCardTimers,
+
+    // Utilities
+    getAllCards,
   };
 
   return <AppStoreContext.Provider value={value}>{children}</AppStoreContext.Provider>;

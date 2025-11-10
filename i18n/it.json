@@ -152,6 +152,40 @@
       "initialDuration": "Durata iniziale",
       "totalDuration": "Durata totale"
     }
+  },
+  "swapCardDialog": {
+    "title": "Scambia postazione",
+    "description": "Seleziona una postazione con cui scambiare il timer di \"{cardName}\"",
+    "searchPlaceholder": "Cerca per nome postazione o sezione...",
+    "noResults": "Nessun risultato trovato",
+    "noCardsAvailable": "Nessuna altra postazione disponibile",
+    "timerActive": "Timer attivo"
+  },
+  "contextMenu": {
+    "startTimer": {
+      "oneHour": "Avvia timer (1 ora)",
+      "quickStart": "Avvio rapido",
+      "durations": {
+        "30min": "30 minuti",
+        "1hour": "1 ora",
+        "2hours": "2 ore"
+      },
+      "custom": "Durata personalizzata..."
+    },
+    "timerActive": {
+      "addOneHour": "Aggiungi 1 ora",
+      "addTime": "Aggiungi tempo",
+      "removeTime": "Rimuovi tempo",
+      "customTime": "Tempo personalizzato...",
+      "details": "Dettagli timer",
+      "reset": "Resetta timer",
+      "swapCard": "Scambia postazione",
+      "durations": {
+        "30min": "30 minuti",
+        "1hour": "1 ora",
+        "2hours": "2 ore"
+      }
+    }
   }
 }
 

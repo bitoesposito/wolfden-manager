@@ -24,6 +24,7 @@ import {
   MoreHorizontal,
   Timer,
   Info,
+  ArrowLeftRight,
 } from 'lucide-react';
 import { useI18n } from '@/hooks/use-i18n';
 
@@ -36,6 +37,8 @@ interface UserCardContextMenuProps {
   onOpenDetailsDialog: () => void;
   onClearTimer: () => void;
   onDeleteCard: () => void;
+  onSwapCard?: () => void;
+  canSwapCard?: boolean;
 }
 
 /**
@@ -51,6 +54,8 @@ export function UserCardContextMenu({
   onOpenDetailsDialog,
   onClearTimer,
   onDeleteCard,
+  onSwapCard,
+  canSwapCard = false,
 }: UserCardContextMenuProps) {
   const { t } = useI18n();
 
@@ -186,6 +191,19 @@ export function UserCardContextMenu({
             <Info className="h-4 w-4" />
             <span>{t('contextMenu.timerActive.details')}</span>
           </ContextMenuItem>
+
+          <ContextMenuSeparator />
+
+          {/* Swap card */}
+          {onSwapCard && (
+            <ContextMenuItem
+              onClick={onSwapCard}
+              disabled={!canSwapCard}
+            >
+              <ArrowLeftRight className="h-4 w-4" />
+              <span>{t('contextMenu.timerActive.swapCard')}</span>
+            </ContextMenuItem>
+          )}
 
           {/* Reset timer */}
           <ContextMenuItem onClick={onClearTimer}>

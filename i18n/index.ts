@@ -44,6 +44,8 @@ export const translations = {
  * @example
  * getTranslation('it', 'card.deleteConfirm', { name: 'Station 1' })
  * // Returns: "Sei sicuro di voler eliminare la postazione \"Station 1\"? Questa azione non può essere annullata."
+ * getTranslation('en', 'card.deleteConfirm', { name: 'Station 1' })
+ * // Returns: "Are you sure you want to delete the station \"Station 1\"? This action cannot be undone."
  */
 export function getTranslation(
   locale: Locale,

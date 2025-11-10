@@ -41,18 +41,14 @@ export function useTimeInputs({ timer, onTimeChange, mounted }: UseTimeInputsPro
     }
   }, [startTime, endTime, mounted]);
 
-  // Handler per onChange: aggiorna solo lo stato locale per mostrare in tempo reale
-  // Non aggiorna il timer per evitare suoni durante la digitazione
   const handleStartTimeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const newTime = e.target.value;
     setStartTimeValue(newTime);
   }, []);
 
-  // Handler per onBlur: aggiorna il timer solo quando l'utente finisce di modificare
   const handleStartTimeBlur = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
     let newTime = e.target.value;
     
-    // Se il campo è vuoto, imposta l'ora attuale
     if (!newTime) {
       newTime = getCurrentTimeString();
       setStartTimeValue(newTime);
@@ -64,11 +60,9 @@ export function useTimeInputs({ timer, onTimeChange, mounted }: UseTimeInputsPro
       
       if (!newStartISO) return;
       
-      // Per l'ora di fine, usa sempre la data dell'ora di inizio come base
       const baseDateForEnd = newStartISO || timer?.startTime;
       let endISO = timeStringToISO(endTimeValue, baseDateForEnd);
       
-      // Se l'ora di fine è minore dell'ora di inizio, aggiungi un giorno all'ora di fine
       if (endISO && endTimeValue) {
         endISO = adjustEndTimeForMidnightCrossing(newStartISO, endTimeValue);
         onTimeChange(newStartISO, endISO);
@@ -76,18 +70,14 @@ export function useTimeInputs({ timer, onTimeChange, mounted }: UseTimeInputsPro
     }
   }, [onTimeChange, endTimeValue, timer]);
 
-  // Handler per onChange: aggiorna solo lo stato locale per mostrare in tempo reale
-  // Non aggiorna il timer per evitare suoni durante la digitazione
   const handleEndTimeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const newTime = e.target.value;
     setEndTimeValue(newTime);
   }, []);
 
-  // Handler per onBlur: aggiorna il timer solo quando l'utente finisce di modificare
   const handleEndTimeBlur = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
     let newTime = e.target.value;
     
-    // Se il campo è vuoto, imposta l'ora attuale
     if (!newTime) {
       newTime = getCurrentTimeString();
       setEndTimeValue(newTime);
@@ -108,8 +98,6 @@ export function useTimeInputs({ timer, onTimeChange, mounted }: UseTimeInputsPro
       
       if (!startISO) return;
       
-      // Per l'ora di fine, usa sempre la data dell'ora di inizio come base
-      // Questo garantisce che se l'ora di fine è minore, possiamo aggiungere un giorno correttamente
       const newEndISO = adjustEndTimeForMidnightCrossing(startISO, newTime);
       onTimeChange(startISO, newEndISO);
     }

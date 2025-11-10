@@ -4,12 +4,12 @@ import { Header } from '@/components/layout/header';
 import { SectionItem } from '@/components/sections/section-item';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { Kbd } from '@/components/ui/kbd';
-import { Plus, PencilRuler } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useEditMode } from '@/hooks';
 import { useI18n } from '@/hooks/use-i18n';
 import { useAppStore } from '@/store';
 import { toast } from 'sonner';
+import { parseEditButtonTooltip } from '@/lib/utils/text-parser';
 
 export function HomeClient() {
   const { editMode, toggleEditMode } = useEditMode();
@@ -102,20 +102,7 @@ export function HomeClient() {
             {t('home.noSections')}
           </p>
           <p className="text-sm text-muted-foreground flex items-center gap-1 flex-wrap justify-center">
-            {(() => {
-              const text = t('home.noSectionsDescription');
-              const parts = text.split('{editButton}');
-              return parts.map((part, index) => (
-                <span key={index}>
-                  {part}
-                  {index < parts.length - 1 && (
-                    <Kbd className="inline-flex items-center gap-1">
-                      <PencilRuler className="h-3 w-3" />
-                    </Kbd>
-                  )}
-                </span>
-              ));
-            })()}
+            {parseEditButtonTooltip(t('home.noSectionsDescription'))}
           </p>
         </div>
       ) : (

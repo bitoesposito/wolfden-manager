@@ -23,7 +23,6 @@ const createWindow = () => {
     },
   });
 
-  // Rimuove completamente il menu (File, Modifica, ecc.)
   Menu.setApplicationMenu(null);
 
   if (app.isPackaged) {

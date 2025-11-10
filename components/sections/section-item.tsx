@@ -13,8 +13,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { ListX, Plus, PencilRuler } from 'lucide-react';
-import { Kbd } from '@/components/ui/kbd';
+import { ListX, Plus } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { UserCard } from '@/components/cards/user-card';
 import { useAppStore } from '@/store';
@@ -22,6 +21,7 @@ import { useSectionCards } from '@/hooks';
 import { useI18n } from '@/hooks/use-i18n';
 import type { SectionItemProps } from '@/types';
 import { toast } from 'sonner';
+import { parseShiftTooltip, parseEditButtonTooltip } from '@/lib/utils/text-parser';
 
 export function SectionItem({
   editMode,
@@ -94,20 +94,7 @@ export function SectionItem({
                     </AlertDialogTrigger>
                   </TooltipTrigger>
                   <TooltipContent>
-                    {(() => {
-                      const text = t('section.deleteTooltip');
-                      const parts = text.split('{shift}');
-                      return parts.map((part, index) => (
-                        <span key={index}>
-                          {part}
-                          {index < parts.length - 1 && (
-                            <Kbd className="inline-flex items-center gap-1 mx-0.5">
-                              Shift
-                            </Kbd>
-                          )}
-                        </span>
-                      ));
-                    })()}
+                    {parseShiftTooltip(t('section.deleteTooltip'))}
                   </TooltipContent>
                 </Tooltip>
                 <AlertDialogContent>
@@ -152,24 +139,9 @@ export function SectionItem({
             {t('section.noCards')}
           </p>
           <p className="text-sm text-muted-foreground flex items-center gap-1 flex-wrap justify-center">
-            {editMode ? (
-              t('section.noCardsDescriptionEditMode')
-            ) : (
-              (() => {
-                const text = t('section.noCardsDescription');
-                const parts = text.split('{editButton}');
-                return parts.map((part, index) => (
-                  <span key={index}>
-                    {part}
-                    {index < parts.length - 1 && (
-                      <Kbd className="inline-flex items-center gap-1">
-                        <PencilRuler className="h-3 w-3" />
-                      </Kbd>
-                    )}
-                  </span>
-                ));
-              })()
-            )}
+            {editMode
+              ? t('section.noCardsDescriptionEditMode')
+              : parseEditButtonTooltip(t('section.noCardsDescription'))}
           </p>
         </div>
       ) : (

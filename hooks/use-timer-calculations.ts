@@ -64,9 +64,6 @@ export function useTimerCalculations(timer: TimerState | undefined) {
       };
     }
 
-    // Calculate remaining seconds using ISO timestamp
-    // Se l'ora di inizio è nel futuro, considera la durata totale
-    // currentTimestamp dependency ensures recalculation every second
     const remainingSeconds = getRemainingSeconds(timer.endTime, timer.startTime);
     
     // Calculate progress based on initial duration

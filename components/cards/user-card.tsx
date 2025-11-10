@@ -6,7 +6,7 @@
 
 "use client"
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { Card } from '@/components/ui/card';
 import {
   ContextMenu,
@@ -16,7 +16,9 @@ import { UserCardHeader } from '@/components/cards/user-card-header';
 import { UserCardContent } from '@/components/cards/user-card-content';
 import { UserCardContextMenu } from '@/components/cards/user-card-context-menu';
 import { UserCardDialogs } from '@/components/cards/user-card-dialogs';
+import { SwapCardDialog } from '@/components/cards/swap-card-dialog';
 import { useTimerCalculations, useCardActions, useCardInteractions } from '@/hooks';
+import { useAppStore } from '@/store/app-store';
 import type { UserCardProps } from '@/types';
 
 /**
@@ -35,6 +37,7 @@ export function UserCard({
   // Local state only for dialogs
   const [addTimeDialogOpen, setAddTimeDialogOpen] = useState(false);
   const [detailsDialogOpen, setDetailsDialogOpen] = useState(false);
+  const [swapCardDialogOpen, setSwapCardDialogOpen] = useState(false);
 
   // Hook for card actions (business logic)
   const {
@@ -46,6 +49,25 @@ export function UserCard({
     addTimeToTimer,
     clearTimer,
   } = useCardActions(sectionId, id);
+
+  // Store per scambio postazioni
+  const { swapCardTimers, getAllCards } = useAppStore();
+
+  // Verifica se ci sono altre postazioni disponibili per lo scambio
+  const canSwapCard = useMemo(() => {
+    const allCards = getAllCards();
+    return allCards.some(
+      (item) => !(item.sectionId === sectionId && item.card.id === id)
+    );
+  }, [getAllCards, sectionId, id]);
+
+  // Handler per lo scambio postazioni
+  const handleSwapCard = useCallback(
+    (targetSectionId: number, targetCardId: number) => {
+      swapCardTimers(sectionId, id, targetSectionId, targetCardId);
+    },
+    [swapCardTimers, sectionId, id]
+  );
 
   // Hook for timer calculations (presentation logic)
   const { remainingTime, isExpired, progressVariant } = useTimerCalculations(timer);
@@ -122,6 +144,8 @@ export function UserCard({
         onOpenDetailsDialog={() => setDetailsDialogOpen(true)}
         onClearTimer={clearTimer}
         onDeleteCard={deleteCard}
+        onSwapCard={canSwapCard ? () => setSwapCardDialogOpen(true) : undefined}
+        canSwapCard={canSwapCard}
       />
 
       <UserCardDialogs
@@ -137,6 +161,15 @@ export function UserCard({
         onStartTimer={handleStartTimer}
         onStartTimerWithDates={startTimerWithDates}
         onUpdateTimerDates={updateTimerDates}
+      />
+
+      <SwapCardDialog
+        open={swapCardDialogOpen}
+        onOpenChange={setSwapCardDialogOpen}
+        currentSectionId={sectionId}
+        currentCardId={id}
+        currentCardName={name}
+        onConfirm={handleSwapCard}
       />
     </ContextMenu>
   );

@@ -90,7 +90,6 @@ export function calculateTimerProgress(timer: TimerState | undefined): number {
     return 0;
   }
 
-  // Considera l'ora di inizio se il timer non è ancora iniziato
   const remainingSeconds = getRemainingSeconds(timer.endTime, timer.startTime);
   return calculateProgress(timer.initialDurationMinutes, remainingSeconds);
 }

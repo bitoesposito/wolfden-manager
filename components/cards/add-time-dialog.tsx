@@ -261,7 +261,6 @@ export function AddTimeDialog({
       const h = parseTimeValue(hours);
       const m = parseTimeValue(minutes);
 
-      // Se il timer non è attivo e il valore è negativo, mostra un avviso
       if (!isTimerActive && totalMinutes < 0) {
         toast.error(t('addTimeDialog.errors.cannotSubtractWhenInactive'), {
           description: t('addTimeDialog.errors.cannotSubtractWhenInactiveDescription'),
@@ -358,9 +357,7 @@ export function AddTimeDialog({
               <div className="grid gap-2">
                 <Label className="text-sm font-medium">{t('addTimeDialog.quickChoices')}</Label>
                 <div className="grid grid-cols-4 gap-2">
-              {quickValues.map((value, index) => {
-                // I valori negativi sono sempre abilitati, ma mostreranno un avviso se il timer non è attivo
-                return (
+              {quickValues.map((value, index) => (
                   <Button
                     key={index}
                     type="button"
@@ -371,8 +368,7 @@ export function AddTimeDialog({
                   >
                     {value.label}
                   </Button>
-                );
-              })}
+              ))}
                 </div>
               </div>
 

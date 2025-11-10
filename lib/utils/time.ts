@@ -145,17 +145,13 @@ export function getRemainingSeconds(endTimestamp: string | null, startTimestamp?
   const now = dayjs().tz(TIMEZONE);
   const endTime = dayjs(endTimestamp).tz(TIMEZONE);
   
-  // Se c'è un'ora di inizio e l'ora attuale è prima dell'ora di inizio,
-  // il timer non è ancora iniziato, quindi restituisci la durata totale
   if (startTimestamp) {
     const startTime = dayjs(startTimestamp).tz(TIMEZONE);
     if (now.isBefore(startTime)) {
-      // Timer non ancora iniziato: restituisci la durata totale
       return endTime.diff(startTime, 'second');
     }
   }
   
-  // Timer già iniziato o senza ora di inizio: calcola tempo rimanente fino alla fine
   return endTime.diff(now, 'second');
 }
 

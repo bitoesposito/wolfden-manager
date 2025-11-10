@@ -18,9 +18,9 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Kbd } from '@/components/ui/kbd';
 import { ClockPlus, ClockFading, X } from 'lucide-react';
 import { useI18n } from '@/hooks/use-i18n';
+import { parseShiftTooltip } from '@/lib/utils/text-parser';
 
 interface UserCardContentProps {
   progressValue: number;
@@ -113,20 +113,7 @@ export function UserCardContent({
                   </AlertDialogTrigger>
                 </TooltipTrigger>
                 <TooltipContent>
-                  {(() => {
-                    const text = t('card.deleteTooltip');
-                    const parts = text.split('{shift}');
-                    return parts.map((part, index) => (
-                      <span key={index}>
-                        {part}
-                        {index < parts.length - 1 && (
-                          <Kbd className="inline-flex items-center gap-1 mx-0.5">
-                            Shift
-                          </Kbd>
-                        )}
-                      </span>
-                    ));
-                  })()}
+                  {parseShiftTooltip(t('card.deleteTooltip'))}
                 </TooltipContent>
               </Tooltip>
               <AlertDialogContent>
