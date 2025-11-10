@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import { AddTimeDialog } from '@/components/cards/add-time-dialog';
-import { toTotalMinutes } from '@/lib/utils/time';
+import { toTotalMinutes, TIMEZONE } from '@/lib/utils/time';
 import { Calendar, Clock, Timer, AlertCircle } from 'lucide-react';
 import { useI18n } from '@/hooks/use-i18n';
 import dayjs from 'dayjs';
@@ -155,7 +155,7 @@ export function UserCardDialogs({
                       <div className="text-xs text-muted-foreground mb-1">{t('timerDetails.fields.startDateTime')}</div>
                       <div className="text-sm font-medium">
                         {timer.startTime
-                          ? dayjs(timer.startTime).tz('Europe/Rome').format('DD/MM/YYYY HH:mm')
+                          ? dayjs(timer.startTime).tz(TIMEZONE).format('DD/MM/YYYY HH:mm')
                           : 'N/A'}
                       </div>
                     </div>
@@ -165,7 +165,7 @@ export function UserCardDialogs({
                       <div className="text-xs text-muted-foreground mb-1">{t('timerDetails.fields.endDateTime')}</div>
                       <div className="text-sm font-medium">
                         {timer.endTime
-                          ? dayjs(timer.endTime).tz('Europe/Rome').format('DD/MM/YYYY HH:mm')
+                          ? dayjs(timer.endTime).tz(TIMEZONE).format('DD/MM/YYYY HH:mm')
                           : 'N/A'}
                       </div>
                     </div>

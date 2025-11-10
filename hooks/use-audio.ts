@@ -36,11 +36,8 @@ export function useAudio() {
    */
   const unmute = async () => {
     const success = await unmuteAudio();
-    if (success) {
-      setMuted(false);
-    }
-    // If unlock failed, user will need to interact with page
-    // but we still set state as unmuted
+    // Always set as unmuted - if unlock failed, user will need to interact with page
+    // but we still update the UI state to reflect user's intent
     setMuted(false);
   };
 

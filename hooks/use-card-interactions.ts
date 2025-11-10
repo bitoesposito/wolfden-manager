@@ -36,21 +36,21 @@ export function useCardInteractions({
 
     const handleKeyDown = (e: KeyboardEvent) => {
       // Check that Ctrl (or Cmd on Mac) is pressed
-      if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey) {
-        if (e.key === '1') {
-          e.preventDefault();
-          if (isTimerActive) {
-            onAddTime(60);
-          } else {
-            onStartTimer(60);
-          }
-        } else if (e.key === '2') {
-          e.preventDefault();
-          if (isTimerActive) {
-            onAddTime(120);
-          } else {
-            onStartTimer(120);
-          }
+      if (!(e.ctrlKey || e.metaKey) || e.shiftKey || e.altKey) return;
+
+      // Map keyboard shortcuts to duration in minutes
+      const shortcuts: Record<string, number> = {
+        '1': 60,
+        '2': 120,
+      };
+
+      const duration = shortcuts[e.key];
+      if (duration) {
+        e.preventDefault();
+        if (isTimerActive) {
+          onAddTime(duration);
+        } else {
+          onStartTimer(duration);
         }
       }
     };

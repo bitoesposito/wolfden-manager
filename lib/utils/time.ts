@@ -13,7 +13,7 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 
 // Configuration constants
-const TIMEZONE = 'Europe/Rome';
+export const TIMEZONE = 'Europe/Rome';
 const TIME_FORMAT = 'HH:mm';
 const TIME_FORMAT_WITH_SECONDS = 'HH:mm:ss';
 
@@ -32,14 +32,6 @@ export function getCurrentTimeString(): string {
  */
 export function getCurrentTimeStringWithSeconds(): string {
   return dayjs().tz(TIMEZONE).format(TIME_FORMAT_WITH_SECONDS);
-}
-
-/**
- * Gets the current ISO timestamp in the configured timezone
- * @returns ISO timestamp (e.g. "2024-01-15T14:30:00+01:00")
- */
-export function getCurrentTimestamp(): string {
-  return dayjs().tz(TIMEZONE).toISOString();
 }
 
 /**
@@ -142,14 +134,28 @@ export function toTotalMinutes(hours: number, minutes: number): number {
 /**
  * Calculates remaining seconds between current time and end timestamp
  * Uses complete ISO timestamps for precise calculations based on real dates
+ * If startTime is provided and current time is before startTime, returns full duration
  * @param endTimestamp - End ISO timestamp
+ * @param startTimestamp - Optional start ISO timestamp (if timer hasn't started yet)
  * @returns Remaining seconds (negative if expired, positive if still active)
  */
-export function getRemainingSeconds(endTimestamp: string | null): number {
+export function getRemainingSeconds(endTimestamp: string | null, startTimestamp?: string | null): number {
   if (!endTimestamp) return 0;
   
   const now = dayjs().tz(TIMEZONE);
   const endTime = dayjs(endTimestamp).tz(TIMEZONE);
+  
+  // Se c'è un'ora di inizio e l'ora attuale è prima dell'ora di inizio,
+  // il timer non è ancora iniziato, quindi restituisci la durata totale
+  if (startTimestamp) {
+    const startTime = dayjs(startTimestamp).tz(TIMEZONE);
+    if (now.isBefore(startTime)) {
+      // Timer non ancora iniziato: restituisci la durata totale
+      return endTime.diff(startTime, 'second');
+    }
+  }
+  
+  // Timer già iniziato o senza ora di inizio: calcola tempo rimanente fino alla fine
   return endTime.diff(now, 'second');
 }
 
@@ -228,4 +234,60 @@ export function formatRemainingTime(seconds: number): string {
   
   // If expired, add + sign
   return isExpired ? `+${formatted}` : formatted;
+}
+
+/**
+ * Adjusts end time to next day if it's before start time
+ * Handles cross-midnight scenarios (e.g., 23:30 start, 01:00 end)
+ * @param startISO - Start ISO timestamp
+ * @param endTimeString - End time string in HH:mm format
+ * @returns Adjusted end ISO timestamp (with +1 day if needed)
+ */
+export function adjustEndTimeForMidnightCrossing(
+  startISO: string,
+  endTimeString: string
+): string {
+  const startDateTime = dayjs(startISO).tz(TIMEZONE);
+  const [hours, minutes] = endTimeString.split(':').map(Number);
+  
+  // Create end time on the same date as start
+  let endDateTime = startDateTime.hour(hours).minute(minutes).second(0).millisecond(0);
+  
+  // Extract time-only strings for comparison
+  const startTimeOnly = startDateTime.format('HH:mm');
+  const endTimeOnly = endDateTime.format('HH:mm');
+  
+  // If end time is before start time, add one day
+  if (endTimeOnly < startTimeOnly) {
+    endDateTime = endDateTime.add(1, 'day');
+  }
+  
+  return endDateTime.toISOString();
+}
+
+/**
+ * Calculates progress bar variant based on remaining time
+ * @param remainingSeconds - Remaining seconds (can be negative if expired)
+ * @returns Progress bar variant: "default" | "warning" | "orange" | "destructive"
+ */
+export function calculateProgressVariant(
+  remainingSeconds: number
+): "default" | "warning" | "orange" | "destructive" {
+  // If 00:00 (remainingSeconds === 0), always use default
+  if (remainingSeconds === 0) {
+    return "default";
+  }
+  
+  const remainingMinutes = Math.floor(remainingSeconds / 60);
+  const isExpired = remainingSeconds < 0;
+  
+  if (isExpired || remainingMinutes <= 10) {
+    return "destructive";
+  } else if (remainingMinutes <= 20) {
+    return "orange";
+  } else if (remainingMinutes <= 30) {
+    return "warning";
+  }
+  
+  return "default";
 }

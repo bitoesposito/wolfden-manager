@@ -90,15 +90,9 @@ export function calculateTimerProgress(timer: TimerState | undefined): number {
     return 0;
   }
 
-  const remainingSeconds = getRemainingSeconds(timer.endTime);
+  // Considera l'ora di inizio se il timer non è ancora iniziato
+  const remainingSeconds = getRemainingSeconds(timer.endTime, timer.startTime);
   return calculateProgress(timer.initialDurationMinutes, remainingSeconds);
-}
-
-/**
- * Resets a timer
- */
-export function clearTimer(timer: TimerState | undefined): undefined {
-  return undefined;
 }
 
 /**

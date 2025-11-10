@@ -95,29 +95,4 @@ export function saveState(state: AppState): void {
   }
 }
 
-/**
- * Clear saved state from localStorage
- */
-export function clearState(): void {
-  if (typeof window === 'undefined') {
-    return;
-  }
-
-  try {
-    localStorage.removeItem(STORAGE_KEY);
-  } catch (error) {
-    console.error('Error clearing state from localStorage:', error);
-  }
-}
-
-/**
- * Check if state exists in localStorage
- */
-export function hasState(): boolean {
-  if (typeof window === 'undefined') {
-    return false;
-  }
-
-  return localStorage.getItem(STORAGE_KEY) !== null;
-}
 

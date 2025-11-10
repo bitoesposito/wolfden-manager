@@ -2,7 +2,13 @@
 
 import { useState, useEffect, useMemo, useRef } from 'react';
 import type { TimerState } from '@/types';
-import { getRemainingSeconds, calculateProgress, formatRemainingTime, isTimerExpired } from '@/lib/utils/time';
+import { 
+  getRemainingSeconds, 
+  calculateProgress, 
+  formatRemainingTime, 
+  isTimerExpired,
+  calculateProgressVariant
+} from '@/lib/utils/time';
 import { playTimerExpiredSound } from '@/lib/utils/sound';
 
 /**
@@ -22,7 +28,7 @@ export function useTimerCalculations(timer: TimerState | undefined) {
   // If timer is already expired on mount, don't play sound
   useEffect(() => {
     if (!hasInitializedRef.current && timer?.isActive && timer.endTime) {
-      const remainingSeconds = getRemainingSeconds(timer.endTime);
+      const remainingSeconds = getRemainingSeconds(timer.endTime, timer.startTime);
       const isExpired = isTimerExpired(remainingSeconds);
       // Mark as handled if already expired to avoid sound on reload
       previousExpiredRef.current = isExpired;
@@ -30,7 +36,7 @@ export function useTimerCalculations(timer: TimerState | undefined) {
     } else if (!timer?.isActive) {
       hasInitializedRef.current = false;
     }
-  }, [timer?.isActive, timer?.endTime]);
+  }, [timer?.isActive, timer?.endTime, timer?.startTime]);
 
   useEffect(() => {
     // Only set up interval if timer is active
@@ -59,8 +65,9 @@ export function useTimerCalculations(timer: TimerState | undefined) {
     }
 
     // Calculate remaining seconds using ISO timestamp
+    // Se l'ora di inizio è nel futuro, considera la durata totale
     // currentTimestamp dependency ensures recalculation every second
-    const remainingSeconds = getRemainingSeconds(timer.endTime);
+    const remainingSeconds = getRemainingSeconds(timer.endTime, timer.startTime);
     
     // Calculate progress based on initial duration
     const progress = calculateProgress(timer.initialDurationMinutes, remainingSeconds);
@@ -71,26 +78,8 @@ export function useTimerCalculations(timer: TimerState | undefined) {
     // Check if timer is expired
     const isExpired = isTimerExpired(remainingSeconds);
     
-    // Calculate remaining minutes for color determination
-    const remainingMinutes = Math.floor(remainingSeconds / 60);
-    
     // Determine progress bar variant based on remaining time
-    // Green (default): > 30 minutes or 00:00 (timer not started)
-    // Yellow (warning): <= 30 minutes
-    // Orange: <= 20 minutes
-    // Red (destructive): <= 10 minutes or expired (but not 00:00)
-    let progressVariant: "default" | "warning" | "orange" | "destructive" = "default";
-    
-    // If 00:00 (remainingSeconds === 0), always use default
-    if (remainingSeconds === 0) {
-      progressVariant = "default";
-    } else if (isExpired || remainingMinutes <= 10) {
-      progressVariant = "destructive";
-    } else if (remainingMinutes <= 20) {
-      progressVariant = "orange";
-    } else if (remainingMinutes <= 30) {
-      progressVariant = "warning";
-    }
+    const progressVariant = calculateProgressVariant(remainingSeconds);
 
     return {
       progress,

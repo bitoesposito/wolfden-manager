@@ -46,7 +46,9 @@ export function UserCardHeader({
     startTimeValue,
     endTimeValue,
     handleStartTimeChange,
+    handleStartTimeBlur,
     handleEndTimeChange,
+    handleEndTimeBlur,
   } = useTimeInputs({
     timer,
     onTimeChange,
@@ -76,6 +78,7 @@ export function UserCardHeader({
             type="time"
             value={startTimeValue}
             onChange={handleStartTimeChange}
+            onBlur={handleStartTimeBlur}
             className="text-sm px-1 m-0 h-fit text-muted-foreground w-fit text-center border-transparent bg-transparent hover:bg-accent/50 focus:bg-accent/50 focus:border-input [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
             style={{ 
               WebkitAppearance: 'none',
@@ -91,6 +94,7 @@ export function UserCardHeader({
             type="time"
             value={endTimeValue}
             onChange={handleEndTimeChange}
+            onBlur={handleEndTimeBlur}
             className="text-sm px-1 m-0 h-fit text-muted-foreground w-fit text-center border-transparent bg-transparent hover:bg-accent/50 focus:bg-accent/50 focus:border-input [&::-webkit-calendar-picker-indicator]:hidden [&::-webkit-calendar-picker-indicator]:appearance-none"
             style={{ 
               WebkitAppearance: 'none',

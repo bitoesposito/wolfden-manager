@@ -20,10 +20,6 @@ import {
 } from '@/features/timers';
 import { loadState, saveState, type AppState } from '@/lib/storage/persistence.service';
 
-// Initial state - empty by default
-const INITIAL_CARDS: UserCard[] = [];
-const INITIAL_SECTIONS: Section[] = [];
-
 interface AppStoreContextValue {
   // Sections
   sections: Section[];
@@ -56,7 +52,7 @@ type CardsBySection = Map<number, UserCard[]>;
 export function AppStoreProvider({ children }: { children: React.ReactNode }) {
   // Initialize with defaults to ensure server/client consistency
   // Load from localStorage only after mount to prevent hydration mismatch
-  const [sections, setSections] = useState<Section[]>(INITIAL_SECTIONS);
+  const [sections, setSections] = useState<Section[]>([]);
   const [cardsBySection, setCardsBySection] = useState<CardsBySection>(() => {
     return new Map<number, UserCard[]>();
   });
@@ -208,17 +204,24 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // ========== TIMER METHODS ==========
-
-  const handleStartTimer = useCallback(
-    (sectionId: number, cardId: number, durationMinutes: number) => {
+  
+  /**
+   * Helper function to update a specific card in a section
+   * Reduces code duplication across timer methods
+   */
+  const updateCardInSection = useCallback(
+    (
+      sectionId: number,
+      cardId: number,
+      updater: (card: UserCard) => UserCard,
+      condition?: (card: UserCard) => boolean
+    ) => {
       setCardsBySection((prev) => {
         const updated = new Map(prev);
         const currentCards = updated.get(sectionId) || [];
         const updatedCards = currentCards.map((card) => {
-          if (card.id === cardId) {
-            const timer = createTimer(durationMinutes);
-            const progress = calculateTimerProgress(timer);
-            return { ...card, timer, progressValue: progress };
+          if (card.id === cardId && (!condition || condition(card))) {
+            return updater(card);
           }
           return card;
         });
@@ -227,79 +230,77 @@ export function AppStoreProvider({ children }: { children: React.ReactNode }) {
       });
     },
     []
+  );
+
+  const handleStartTimer = useCallback(
+    (sectionId: number, cardId: number, durationMinutes: number) => {
+      updateCardInSection(
+        sectionId,
+        cardId,
+        (card) => {
+          const timer = createTimer(durationMinutes);
+          const progress = calculateTimerProgress(timer);
+          return { ...card, timer, progressValue: progress };
+        }
+      );
+    },
+    [updateCardInSection]
   );
 
   const handleStartTimerWithDates = useCallback(
     (sectionId: number, cardId: number, startTime: string, endTime: string) => {
-      setCardsBySection((prev) => {
-        const updated = new Map(prev);
-        const currentCards = updated.get(sectionId) || [];
-        const updatedCards = currentCards.map((card) => {
-          if (card.id === cardId) {
-            const timer = createTimerWithDates(startTime, endTime);
-            const progress = calculateTimerProgress(timer);
-            return { ...card, timer, progressValue: progress };
-          }
-          return card;
-        });
-        updated.set(sectionId, updatedCards);
-        return updated;
-      });
+      updateCardInSection(
+        sectionId,
+        cardId,
+        (card) => {
+          const timer = createTimerWithDates(startTime, endTime);
+          const progress = calculateTimerProgress(timer);
+          return { ...card, timer, progressValue: progress };
+        }
+      );
     },
-    []
+    [updateCardInSection]
   );
 
   const handleUpdateTimerDates = useCallback(
     (sectionId: number, cardId: number, startTime: string, endTime: string) => {
-      setCardsBySection((prev) => {
-        const updated = new Map(prev);
-        const currentCards = updated.get(sectionId) || [];
-        const updatedCards = currentCards.map((card) => {
-          if (card.id === cardId && card.timer?.isActive) {
-            const updatedTimer = updateTimerDates(card.timer, startTime, endTime);
-            const progress = calculateTimerProgress(updatedTimer);
-            return { ...card, timer: updatedTimer, progressValue: progress };
-          }
-          return card;
-        });
-        updated.set(sectionId, updatedCards);
-        return updated;
-      });
+      updateCardInSection(
+        sectionId,
+        cardId,
+        (card) => {
+          const updatedTimer = updateTimerDates(card.timer!, startTime, endTime);
+          const progress = calculateTimerProgress(updatedTimer);
+          return { ...card, timer: updatedTimer, progressValue: progress };
+        },
+        (card) => card.timer?.isActive === true
+      );
     },
-    []
+    [updateCardInSection]
   );
 
   const handleAddTimeToTimer = useCallback(
     (sectionId: number, cardId: number, minutes: number) => {
-      setCardsBySection((prev) => {
-        const updated = new Map(prev);
-        const currentCards = updated.get(sectionId) || [];
-        const updatedCards = currentCards.map((card) => {
-          if (card.id === cardId && card.timer?.isActive) {
-            const updatedTimer = addTimeToTimer(card.timer, minutes);
-            const progress = calculateTimerProgress(updatedTimer);
-            return { ...card, timer: updatedTimer, progressValue: progress };
-          }
-          return card;
-        });
-        updated.set(sectionId, updatedCards);
-        return updated;
-      });
+      updateCardInSection(
+        sectionId,
+        cardId,
+        (card) => {
+          const updatedTimer = addTimeToTimer(card.timer!, minutes);
+          const progress = calculateTimerProgress(updatedTimer);
+          return { ...card, timer: updatedTimer, progressValue: progress };
+        },
+        (card) => card.timer?.isActive === true
+      );
     },
-    []
+    [updateCardInSection]
   );
 
   const handleClearTimer = useCallback((sectionId: number, cardId: number) => {
-    setCardsBySection((prev) => {
-      const updated = new Map(prev);
-      const currentCards = updated.get(sectionId) || [];
-      const updatedCards = currentCards.map((card) =>
-        card.id === cardId ? { ...card, timer: undefined, progressValue: 0 } : card
-      );
-      updated.set(sectionId, updatedCards);
-      return updated;
-    });
-  }, []);
+    updateCardInSection(
+      sectionId,
+      cardId,
+      (card) => ({ ...card, timer: undefined, progressValue: 0 })
+    );
+  }, [updateCardInSection]);
 
   const value: AppStoreContextValue = {
     // Sections

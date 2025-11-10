@@ -32,10 +32,3 @@ export function deleteCard(cards: UserCard[], cardId: number): UserCard[] {
   return cards.filter((card) => card.id !== cardId);
 }
 
-/**
- * Finds a card by ID
- */
-export function findCardById(cards: UserCard[], cardId: number): UserCard | undefined {
-  return cards.find((card) => card.id === cardId);
-}
-

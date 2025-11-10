@@ -14,6 +14,42 @@ import { getTranslation, defaultLocale, type Locale } from '@/i18n';
 import { useEffect, useState } from 'react';
 
 const SUPPORTED_LOCALES = ['it', 'en'] as const;
+const LOCALE_COOKIE_NAME = 'NEXT_LOCALE';
+
+/**
+ * Extracts locale from cookie
+ * @returns Locale from cookie or undefined if not found/invalid
+ */
+function getLocaleFromCookie(): Locale | undefined {
+  if (typeof document === 'undefined') return undefined;
+  
+  const cookieLocale = document.cookie
+    .split('; ')
+    .find(row => row.startsWith(`${LOCALE_COOKIE_NAME}=`))
+    ?.split('=')[1] as Locale | undefined;
+
+  if (cookieLocale && SUPPORTED_LOCALES.includes(cookieLocale)) {
+    return cookieLocale;
+  }
+  
+  return undefined;
+}
+
+/**
+ * Extracts locale from URL pathname
+ * @param pathname - Current pathname
+ * @returns Locale from path or undefined if not found/invalid
+ */
+function getLocaleFromPath(pathname: string): Locale | undefined {
+  const segments = pathname.split('/').filter(Boolean);
+  const firstSegment = segments[0];
+
+  if (firstSegment && SUPPORTED_LOCALES.includes(firstSegment as typeof SUPPORTED_LOCALES[number])) {
+    return firstSegment as Locale;
+  }
+  
+  return undefined;
+}
 
 /**
  * Hook to get translations
@@ -25,25 +61,17 @@ export function useI18n() {
 
   useEffect(() => {
     // Strategy 1: Extract locale from pathname (e.g., /en/page -> 'en')
-    const segments = pathname.split('/').filter(Boolean);
-    const firstSegment = segments[0];
-
-    if (firstSegment && SUPPORTED_LOCALES.includes(firstSegment as typeof SUPPORTED_LOCALES[number])) {
-      setLocale(firstSegment as Locale);
+    const pathLocale = getLocaleFromPath(pathname);
+    if (pathLocale) {
+      setLocale(pathLocale);
       return;
     }
 
     // Strategy 2: Read from cookie (set by middleware)
-    if (typeof document !== 'undefined') {
-      const cookieLocale = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('NEXT_LOCALE='))
-        ?.split('=')[1] as Locale | undefined;
-
-      if (cookieLocale && SUPPORTED_LOCALES.includes(cookieLocale)) {
-        setLocale(cookieLocale);
-        return;
-      }
+    const cookieLocale = getLocaleFromCookie();
+    if (cookieLocale) {
+      setLocale(cookieLocale);
+      return;
     }
 
     // Strategy 3: Fallback to default

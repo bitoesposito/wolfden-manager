@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Plus, Minus, Calendar as CalendarIcon, Clock } from 'lucide-react';
-import { normalizeTime, toTotalMinutes, getCurrentTimestamp } from '@/lib/utils/time';
+import { normalizeTime, toTotalMinutes, TIMEZONE } from '@/lib/utils/time';
 import { toast } from 'sonner';
 import { useI18n } from '@/hooks/use-i18n';
 import dayjs from 'dayjs';
@@ -239,15 +239,15 @@ export function AddTimeDialog({
     if (mode === 'dates' && open) {
       if (isTimerActive && currentStartTime && currentEndTime) {
         // Use existing timer values
-        const start = dayjs(currentStartTime).tz('Europe/Rome');
-        const end = dayjs(currentEndTime).tz('Europe/Rome');
+        const start = dayjs(currentStartTime).tz(TIMEZONE);
+        const end = dayjs(currentEndTime).tz(TIMEZONE);
         setStartDate(start.format('YYYY-MM-DD'));
         setStartTime(start.format('HH:mm'));
         setEndDate(end.format('YYYY-MM-DD'));
         setEndTime(end.format('HH:mm'));
       } else {
         // Use current values
-        const now = dayjs().tz('Europe/Rome');
+        const now = dayjs().tz(TIMEZONE);
         setStartDate(now.format('YYYY-MM-DD'));
         setStartTime(now.format('HH:mm'));
         setEndDate(now.format('YYYY-MM-DD'));
@@ -282,8 +282,8 @@ export function AddTimeDialog({
 
       try {
         // Create timestamps with correct format
-        const start = dayjs.tz(`${startDate}T${startTime}`, 'YYYY-MM-DDTHH:mm', 'Europe/Rome');
-        const end = dayjs.tz(`${endDate}T${endTime}`, 'YYYY-MM-DDTHH:mm', 'Europe/Rome');
+        const start = dayjs.tz(`${startDate}T${startTime}`, 'YYYY-MM-DDTHH:mm', TIMEZONE);
+        const end = dayjs.tz(`${endDate}T${endTime}`, 'YYYY-MM-DDTHH:mm', TIMEZONE);
 
         // Verify that dates are valid
         if (!start.isValid() || !end.isValid()) {

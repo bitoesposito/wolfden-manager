@@ -4,14 +4,13 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { timestampToTimeString, timeStringToISO } from '@/lib/utils/time';
+import { 
+  timestampToTimeString, 
+  timeStringToISO, 
+  adjustEndTimeForMidnightCrossing,
+  getCurrentTimeString
+} from '@/lib/utils/time';
 import type { TimerState } from '@/types';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
 
 interface UseTimeInputsProps {
   timer?: TimerState;
@@ -42,27 +41,57 @@ export function useTimeInputs({ timer, onTimeChange, mounted }: UseTimeInputsPro
     }
   }, [startTime, endTime, mounted]);
 
+  // Handler per onChange: aggiorna solo lo stato locale per mostrare in tempo reale
+  // Non aggiorna il timer per evitare suoni durante la digitazione
   const handleStartTimeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const newTime = e.target.value;
     setStartTimeValue(newTime);
+  }, []);
+
+  // Handler per onBlur: aggiorna il timer solo quando l'utente finisce di modificare
+  const handleStartTimeBlur = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
+    let newTime = e.target.value;
+    
+    // Se il campo è vuoto, imposta l'ora attuale
+    if (!newTime) {
+      newTime = getCurrentTimeString();
+      setStartTimeValue(newTime);
+    }
     
     if (onTimeChange && newTime) {
       // Keep date from existing timer, change only time; otherwise use current date
       const newStartISO = timeStringToISO(newTime, timer?.startTime);
       
-      // For end time, use timer date if exists, otherwise current date
-      const endBaseDate = timer?.endTime || timer?.startTime;
-      const endISO = timeStringToISO(endTimeValue, endBaseDate);
+      if (!newStartISO) return;
       
-      if (newStartISO && endISO) {
+      // Per l'ora di fine, usa sempre la data dell'ora di inizio come base
+      const baseDateForEnd = newStartISO || timer?.startTime;
+      let endISO = timeStringToISO(endTimeValue, baseDateForEnd);
+      
+      // Se l'ora di fine è minore dell'ora di inizio, aggiungi un giorno all'ora di fine
+      if (endISO && endTimeValue) {
+        endISO = adjustEndTimeForMidnightCrossing(newStartISO, endTimeValue);
         onTimeChange(newStartISO, endISO);
       }
     }
   }, [onTimeChange, endTimeValue, timer]);
 
+  // Handler per onChange: aggiorna solo lo stato locale per mostrare in tempo reale
+  // Non aggiorna il timer per evitare suoni durante la digitazione
   const handleEndTimeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const newTime = e.target.value;
     setEndTimeValue(newTime);
+  }, []);
+
+  // Handler per onBlur: aggiorna il timer solo quando l'utente finisce di modificare
+  const handleEndTimeBlur = useCallback((e: React.FocusEvent<HTMLInputElement>) => {
+    let newTime = e.target.value;
+    
+    // Se il campo è vuoto, imposta l'ora attuale
+    if (!newTime) {
+      newTime = getCurrentTimeString();
+      setEndTimeValue(newTime);
+    }
     
     if (onTimeChange && newTime) {
       let startISO: string;
@@ -72,18 +101,17 @@ export function useTimeInputs({ timer, onTimeChange, mounted }: UseTimeInputsPro
         startISO = timeStringToISO(startTimeValue, timer.startTime);
       } else {
         // No timer: set start time to current time when entering end time
-        const currentTime = dayjs().tz('Europe/Rome').format('HH:mm');
+        const currentTime = getCurrentTimeString();
         setStartTimeValue(currentTime);
         startISO = timeStringToISO(currentTime, null);
       }
       
-      // For end time, use timer date if exists, otherwise current date
-      const endBaseDate = timer?.endTime || timer?.startTime;
-      const newEndISO = timeStringToISO(newTime, endBaseDate);
+      if (!startISO) return;
       
-      if (startISO && newEndISO) {
-        onTimeChange(startISO, newEndISO);
-      }
+      // Per l'ora di fine, usa sempre la data dell'ora di inizio come base
+      // Questo garantisce che se l'ora di fine è minore, possiamo aggiungere un giorno correttamente
+      const newEndISO = adjustEndTimeForMidnightCrossing(startISO, newTime);
+      onTimeChange(startISO, newEndISO);
     }
   }, [onTimeChange, startTimeValue, timer]);
 
@@ -93,7 +121,9 @@ export function useTimeInputs({ timer, onTimeChange, mounted }: UseTimeInputsPro
     startTimeValue,
     endTimeValue,
     handleStartTimeChange,
+    handleStartTimeBlur,
     handleEndTimeChange,
+    handleEndTimeBlur,
   };
 }
 
