@@ -68,6 +68,9 @@
     "startTimer": "Start timer (1 hour)",
     "namePlaceholder": "Station name",
     "timerAvailable": "Available",
+    "startTimeLabel": "Start time for {name}",
+    "endTimeLabel": "End time for {name}",
+    "progressLabel": "Timer progress for {name}",
     "scrollAdjustTime": {
       "scroll": "Scroll"
     }
@@ -96,7 +99,9 @@
         "5min": "5 minutes",
         "10min": "10 minutes",
         "15min": "15 minutes",
+        "20min": "20 minutes",
         "30min": "30 minutes",
+        "45min": "45 minutes",
         "1hour": "1 hour",
         "2hours": "2 hours"
       }

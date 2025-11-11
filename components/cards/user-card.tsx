@@ -83,11 +83,15 @@ export function UserCard({
     addTimeToTimer(minutes);
   }, [addTimeToTimer]);
 
-  const handleQuickAdd = useCallback(() => {
+  /**
+   * Handler per aggiungere/avviare timer con durata specifica
+   * Se timer attivo: aggiunge tempo, altrimenti avvia timer
+   */
+  const handleQuickAdd = useCallback((minutes: number) => {
     if (isTimerActive) {
-      handleAddTime(60);
+      handleAddTime(minutes);
     } else {
-      handleStartTimer(60);
+      handleStartTimer(minutes);
     }
   }, [isTimerActive, handleAddTime, handleStartTimer]);
 

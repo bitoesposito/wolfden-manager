@@ -21,7 +21,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
-  Play,
   ClockPlus,
   Clock,
   ClockAlert,
@@ -72,61 +71,7 @@ export function UserCardContextMenu({
       {/* Timer actions - different based on active state */}
       {!isTimerActive ? (
         <>
-          {/* Primary action: Start timer */}
-          <ContextMenuItem onClick={() => onStartTimer(60)}>
-            <Play className="h-4 w-4" />
-            <span>{t("contextMenu.startTimer.oneHour")}</span>
-            <ContextMenuShortcut>
-              <KbdGroup>
-                <Kbd>Ctrl</Kbd>
-                <Kbd>1</Kbd>
-              </KbdGroup>
-            </ContextMenuShortcut>
-          </ContextMenuItem>
-
-          <ContextMenuSeparator />
-
-          {/* Quick start durations */}
-          <ContextMenuSub>
-            <ContextMenuSubTrigger>
-              <Timer className="h-4 w-4 mr-2" />
-              <span>{t("contextMenu.startTimer.quickStart")}</span>
-            </ContextMenuSubTrigger>
-            <ContextMenuSubContent>
-              <ContextMenuItem onClick={() => onStartTimer(30)}>
-                <Clock className="h-4 w-4" />
-                <span>{t("contextMenu.startTimer.durations.30min")}</span>
-                <ContextMenuShortcut>
-                  <KbdGroup>
-                    <Kbd>Ctrl</Kbd>
-                    <Kbd>3</Kbd>
-                  </KbdGroup>
-                </ContextMenuShortcut>
-              </ContextMenuItem>
-              <ContextMenuItem onClick={() => onStartTimer(60)}>
-                <Clock className="h-4 w-4" />
-                <span>{t("contextMenu.startTimer.durations.1hour")}</span>
-                <ContextMenuShortcut>
-                  <KbdGroup>
-                    <Kbd>Ctrl</Kbd>
-                    <Kbd>1</Kbd>
-                  </KbdGroup>
-                </ContextMenuShortcut>
-              </ContextMenuItem>
-              <ContextMenuItem onClick={() => onStartTimer(120)}>
-                <Clock className="h-4 w-4" />
-                <span>{t("contextMenu.startTimer.durations.2hours")}</span>
-                <ContextMenuShortcut>
-                  <KbdGroup>
-                    <Kbd>Ctrl</Kbd>
-                    <Kbd>2</Kbd>
-                  </KbdGroup>
-                </ContextMenuShortcut>
-              </ContextMenuItem>
-            </ContextMenuSubContent>
-          </ContextMenuSub>
-
-          {/* Custom duration */}
+          {/* Solo durata personalizzata - i pulsanti rapidi sono già nella barra */}
           <ContextMenuItem onClick={onOpenCustomDialog}>
             <MoreHorizontal className="h-4 w-4" />
             <span>{t("contextMenu.startTimer.custom")}</span>

@@ -9,9 +9,11 @@ function Progress({
   className,
   value,
   variant,
+  "aria-label": ariaLabel,
   ...props
 }: React.ComponentProps<typeof ProgressPrimitive.Root> & {
   variant?: "default" | "warning" | "orange" | "destructive"
+  "aria-label"?: string
 }) {
   const displayValue = value || 0;
   
@@ -62,6 +64,10 @@ function Progress({
         colors.bg,
         className
       )}
+      aria-label={ariaLabel}
+      aria-valuenow={displayValue}
+      aria-valuemin={0}
+      aria-valuemax={100}
       {...props}
     >
       <ProgressPrimitive.Indicator

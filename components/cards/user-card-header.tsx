@@ -70,7 +70,7 @@ export function UserCardHeader({
       )}
 
       <div className="flex items-center gap-1">
-        <Play className="text-muted-foreground" size={16} />
+        <Play className="text-muted-foreground" size={16} aria-hidden="true" />
         <TimeInputField
           value={startTimeValue}
           onChange={handleStartTimeChange}
@@ -78,8 +78,10 @@ export function UserCardHeader({
           displayValue={startTime}
           mounted={mounted}
           editable={!!onTimeChange}
+          label={t('card.startTimeLabel', { name })}
+          id={`${name}-start-time`}
         />
-        <SkipForward className="text-muted-foreground" size={16} />
+        <SkipForward className="text-muted-foreground" size={16} aria-hidden="true" />
         <TimeInputField
           value={endTimeValue}
           onChange={handleEndTimeChange}
@@ -87,6 +89,8 @@ export function UserCardHeader({
           displayValue={endTime}
           mounted={mounted}
           editable={!!onTimeChange}
+          label={t('card.endTimeLabel', { name })}
+          id={`${name}-end-time`}
         />
       </div>
     </CardHeader>

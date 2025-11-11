@@ -127,9 +127,11 @@ export function Header({ editMode, toggleEditMode }: HeaderProps) {
                 variant={editMode ? "success" : "outline"} 
                 onClick={toggleEditMode}
                 className="cursor-pointer"
+                aria-label={editMode ? t('header.saveChanges') : t('header.toggleEditMode')}
               >
                 {editMode ? <Check /> : <PencilRuler />}
                 <span className="sm:block hidden">{editMode ? t('header.saveChanges') : t('header.toggleEditMode')}</span>
+                <span className="sr-only">{editMode ? t('header.saveChanges') : t('header.toggleEditMode')}</span>
               </Button>
             </TooltipTrigger>
             <TooltipContent>

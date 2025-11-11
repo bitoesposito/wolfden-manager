@@ -68,6 +68,9 @@
     "startTimer": "Avvia timer (1 ora)",
     "namePlaceholder": "Nome postazione",
     "timerAvailable": "Disponibile",
+    "startTimeLabel": "Ora di inizio per {name}",
+    "endTimeLabel": "Ora di fine per {name}",
+    "progressLabel": "Progresso timer per {name}",
     "scrollAdjustTime": {
       "scroll": "Scroll"
     }
